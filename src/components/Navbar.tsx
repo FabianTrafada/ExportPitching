@@ -81,7 +81,7 @@ export default function Navbar() {
               whileTap={{ scale: 0.95 }}
               className="space-x-4"
             >
-              <Button className="border-2 border-yellow-400 bg-white  text-gray-800 font-medium">
+              <Button variant="outline" className="border-2 border-yellow-400 bg-white  text-gray-800 font-medium">
                 Log In
               </Button>
               <Button className="bg-yellow-400 hover:bg-yellow-500 text-white font-medium">
@@ -140,7 +140,7 @@ export default function Navbar() {
                 whileTap={{ scale: 0.95 }}
                 className="space-x-4"
               >
-                <Button className="border-2 border-yellow-400 bg-white  text-gray-800 font-medium">
+                <Button variant="outline" className="border-2 border-yellow-400 bg-white  text-gray-800 font-medium">
                   Log In
                 </Button>
                 <Button className="bg-yellow-400 hover:bg-yellow-500 text-white font-medium">
