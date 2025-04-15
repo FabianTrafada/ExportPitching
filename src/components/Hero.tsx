@@ -25,7 +25,7 @@ export default function Hero() {
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5, delay: 0.2}}
                         >
-                            EXPORTPITCHING AI
+                            EXPORTPITCH AI
                         </motion.h2>
                         <motion.h1
                             className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-gray-900"
