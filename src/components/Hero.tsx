@@ -54,8 +54,7 @@ export default function Hero() {
                                 Get Started
                             </Button>
                             <Button 
-                                variant="outline"
-                                className="border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 font-medium text-lg px-8 py-6"
+                                className="border-yellow-400 bg-white text-yellow-400 hover:bg-yellow-400/10 font-medium text-lg px-8 py-6"
                             >
                                 Learn More
                             </Button>
