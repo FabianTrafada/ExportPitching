@@ -1,0 +1,45 @@
+export const plans = [
+    {
+      name: "Starter",
+      price: "Rp 499.000",
+      description: "Perfect for new exporters looking to improve their pitch",
+      features: [
+        "5 AI pitch practice sessions",
+        "Basic feedback and analysis",
+        "Access to pitch templates",
+        "Email support",
+      ],
+      buttonText: "Get Started",
+      popular: false,
+    },
+    {
+      name: "Professional",
+      price: "Rp 999.000",
+      description: "For serious exporters ready to excel in global markets",
+      features: [
+        "Unlimited AI pitch practice sessions",
+        "Advanced feedback with cultural insights",
+        "Personalized improvement plan",
+        "Market-specific training modules",
+        "Priority support",
+        "1 expert review session",
+      ],
+      buttonText: "Get Started",
+      popular: true,
+    },
+    {
+      name: "Enterprise",
+      price: "Contact Us",
+      description: "Custom solutions for export companies and organizations",
+      features: [
+        "Everything in Professional",
+        "Custom training for your products",
+        "Team accounts and analytics",
+        "Export market research integration",
+        "Dedicated account manager",
+        "3 expert review sessions",
+      ],
+      buttonText: "Contact Sales",
+      popular: false,
+    },
+  ]

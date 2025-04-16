@@ -15,16 +15,15 @@ import {
 
 export default function Features() {
   return (
-    <section id="features" className="py-20 bg-gray-50">
+    <section id="features" className="py-20 bg-gray-50" aria-labelledby="features-heading">
       <div className="container mx-auto px-4">
         <AnimatedSection>
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+            <h2 id="features-heading" className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
               FEATURED
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our AI-powered platform offers comprehensive tools to perfect your
-              export pitch
+              Our AI-powered platform offers comprehensive tools to perfect your export pitch
             </p>
           </div>
         </AnimatedSection>
@@ -50,14 +49,10 @@ export default function Features() {
                   >
                     {feature.icon}
                   </motion.div>
-                  <CardTitle className="text-xl text-black font-bold">
-                    {feature.title}
-                  </CardTitle>
+                  <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600 text-base">
-                    {feature.description}
-                  </CardDescription>
+                  <CardDescription className="text-gray-600 text-base">{feature.description}</CardDescription>
                 </CardContent>
               </Card>
             </motion.div>
@@ -65,5 +60,5 @@ export default function Features() {
         </StaggeredList>
       </div>
     </section>
-  );
+  )
 }
