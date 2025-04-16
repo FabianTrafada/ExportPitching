@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin/", "/private/"],
     },
-    sitemap: "https://exportpitch.ai/sitemap.xml",
+    sitemap: "https://localhost:3000/sitemap.xml",
   }
 }
