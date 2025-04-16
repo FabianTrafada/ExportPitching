@@ -4,7 +4,7 @@ import Features from "@/components/Features";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
-// import Pricing from "@/components/Pricing";
+import Pricing from "@/components/Pricing";
 import StructuredData from "@/components/StructuredData";
 import Testimonials from "@/components/Testimonials";
 
@@ -17,7 +17,7 @@ export default function Home() {
       <Features />
       <Benefits />
       <Testimonials />
-      {/* <Pricing /> */}
+      <Pricing />
       <CallToAction />
       <Footer />
     </main>

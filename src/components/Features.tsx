@@ -49,7 +49,7 @@ export default function Features() {
                   >
                     {feature.icon}
                   </motion.div>
-                  <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
+                  <CardTitle className="text-xl font-bold text-black">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-gray-600 text-base">{feature.description}</CardDescription>

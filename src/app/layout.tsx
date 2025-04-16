@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ClerkProvider } from "@clerk/nextjs";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -59,7 +61,7 @@ export const metadata: Metadata = {
   verification: {
     google: "google-site-verification-code",
   },
-}
+};
 
 export default function RootLayout({
   children,
@@ -67,12 +69,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
-        <ThemeProvider attribute={"class"} defaultTheme="light" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.className} antialiased`}>
+          <ThemeProvider
+            attribute={"class"}
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <SpeedInsights />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

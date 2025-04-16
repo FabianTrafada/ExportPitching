@@ -17,4 +17,12 @@ export interface StaggeredListProps {
     direction?: "up" | "down" | "left" | "right" | "none"
     duration?: number
     once?: boolean
-  }
+}
+
+export interface AuthLayoutProps {
+  children: React.ReactNode
+  title: string
+  description: string
+  backUrl?: string
+  backLabel?: string
+}
