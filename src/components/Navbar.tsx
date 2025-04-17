@@ -85,6 +85,12 @@ export default function Navbar() {
                 </Link>
               </motion.div>
             ))}
+            {isSignedIn && (
+                    <Link
+                      href={"/dashboard"}
+                      className="text-gray-800 hover:text-yellow-500 transition-colors"
+                    >Dashboard</Link>
+                  )}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -93,6 +99,7 @@ export default function Navbar() {
               whileTap={{ scale: 0.95 }}
               className="space-x-4"
             >
+              
               {isSignedIn ? (
                 <UserButton />
               ) : (

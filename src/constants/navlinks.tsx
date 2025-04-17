@@ -6,4 +6,4 @@ export const navItems = [
     { name: "Expert Talk", href: "#experts" },
     { name: "Resources", href: "#resources" },
     { name: "Article", href: "#articles" },
-  ]
+];
