@@ -1,5 +1,5 @@
 import Billboard from "@/components/dashboard/Billboard";
-import PopularTemplate from "@/app/dashboard/PopularTemplate";
+import PopularTemplate from "@/components/dashboard/PopularTemplate";
 
 export default function DashboardPage() {
   return (

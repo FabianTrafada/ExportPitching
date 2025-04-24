@@ -1,5 +1,3 @@
-export const revalidate = 60
-
 import { Card } from "@/components/ui/card";
 import { db } from "@/db/neon";
 import { practiceTemplates } from "@/db/schema";
