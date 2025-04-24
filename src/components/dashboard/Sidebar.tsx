@@ -16,7 +16,7 @@ import { menuItems } from '@/constants/sidelinks';
 import { UserButton, useUser } from '@clerk/nextjs';
 
 export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const { user } = useUser();
 
   return (

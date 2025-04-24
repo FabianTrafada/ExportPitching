@@ -30,3 +30,16 @@ export interface AuthLayoutProps {
 export interface DashboardLayoutProps {
   children: ReactNode
 }
+
+export interface PracticeCardProps {
+  id: number;
+  title: string;
+  description: string;
+  difficulty: string; // beginner, intermediate, advanced
+  duration: number; // in minutes
+  industry: string;
+  targetMarket: string;
+  targetMarketCode: string;
+  imageUrl?: string | null;
+  usageCount: number;
+}
