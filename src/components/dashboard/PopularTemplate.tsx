@@ -55,10 +55,10 @@ export default async function PopularTemplate() {
                   <div className="flex items-center gap-2">
                     <Image
                       width={24}
-                      height={18}
-                      src={`https://flagcdn.com/24x18/${template.targetMarketCode.toLowerCase()}.svg`} 
+                      height={24}
+                      src={`https://flagcdn.com/${template.targetMarketCode.toLowerCase()}.svg`} 
                       alt={template.targetMarket}
-                      className="rounded-sm"
+                      className="shadow-sm"
                     />
                     <span>{template.targetMarket}</span>
                   </div>
