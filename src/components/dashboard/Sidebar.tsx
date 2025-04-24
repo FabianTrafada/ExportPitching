@@ -22,11 +22,11 @@ export default function Sidebar() {
   return (
     <div
       className={cn(
-        'h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col',
+        'fixed top-0 left-0 h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col overflow-y-auto',
         isCollapsed ? 'w-20' : 'w-68'
       )}
     >
-      <div className={cn('flex items-center  p-4 border-b border-gray-200', isCollapsed ? 'pl-[12px]' : 'justify-between')}>
+      <div className={cn('flex items-center sticky top-0 z-10 p-4 border-b border-gray-200 bg-white', isCollapsed ? 'pl-[12px]' : 'justify-between')}>
         <div className={cn('flex items-center gap-3', isCollapsed && 'justify-center')}>
           {!isCollapsed && <span className="text-xl font-bold">
             <Link href="/" className="flex items-center">
@@ -81,7 +81,7 @@ export default function Sidebar() {
         </button>
       </div>
       <TooltipProvider>
-        <nav className="p-4 flex-1">
+        <nav className="p-4 flex-1 overflow-y-auto">
           {menuItems.map((item) => (
             <Tooltip key={item.label}>
               <TooltipTrigger asChild>
@@ -107,7 +107,7 @@ export default function Sidebar() {
       </TooltipProvider>
 
       <TooltipProvider>
-        <div className='border-t border-gray-200 p-4 pr-1.5 '>
+        <div className='sticky bottom-0 bg-white border-t border-gray-200 p-4 pr-1.5'>
         <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -136,4 +136,3 @@ export default function Sidebar() {
     </div>
   );
 };
-

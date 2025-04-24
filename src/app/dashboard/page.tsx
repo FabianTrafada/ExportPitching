@@ -6,7 +6,7 @@ import PracticeCard from "@/components/dashboard/PracticeCard";
 export default async function DashboardPage() {
   const practiceTemplates = await getPracticeTemplates();
   return (
-    <div>
+    <div className="ml-20">
       <Billboard />
       <PopularTemplate />
       <div className="mb-8">
