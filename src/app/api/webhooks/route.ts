@@ -55,18 +55,29 @@ export async function POST(req: Request) {
   // console.log('Webhook payload:', body)
 
   if(evt.type === 'user.created') {
-    const { id, username, image_url } = evt.data
+    const { id, email_addresses, username, image_url } = evt.data
+
+    if(!email_addresses || email_addresses.length === 0) {
+      return new Response('Error: User must have an email address', {
+        status: 400,
+      })
+    }
+
+    const email = email_addresses[0].email_address
+
+    if(!id || !email || !username || !image_url) {
+      return new Response('Error: Missing required user data', {
+        status: 400,
+      });
+    }
     
 
     try {
-      const primaryEmail = payload.data.email_addresses.find(
-        (email: { id: string }) => email.id === payload.data.primary_email_address_id
-      )?.email_address
       const newUser = await db.insert(users).values({
-        email: primaryEmail,
-        name: username ,
-        imageUrl: image_url ?? '',
-        clerkUserId: id ?? ''
+        email: email,
+        name: username || "Anonymous User",
+        imageUrl: image_url || '',
+        clerkUserId: id
       });
       return new Response(JSON.stringify(newUser), {
         status: 201,
