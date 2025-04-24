@@ -2,17 +2,15 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useAuth, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { navItems } from "@/constants/navlinks";
 
 export default function Navbar() {
-  const { isSignedIn } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const signInClick = () => {
@@ -64,7 +62,6 @@ export default function Navbar() {
                   pitch
                 </motion.span>
               </span>
-              <Image src={"/logo.jpg"} alt="Logo" width={100} height={100} />
             </Link>
           </motion.div>
 
@@ -85,12 +82,14 @@ export default function Navbar() {
                 </Link>
               </motion.div>
             ))}
-            {isSignedIn && (
-                    <Link
-                      href={"/dashboard"}
-                      className="text-gray-800 hover:text-yellow-500 transition-colors"
-                    >Dashboard</Link>
-                  )}
+            <SignedIn>
+              <Link
+                href={"/dashboard"}
+                className="text-gray-800 hover:text-yellow-500 transition-colors"
+              >
+                Dashboard
+              </Link>
+            </SignedIn>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -99,26 +98,24 @@ export default function Navbar() {
               whileTap={{ scale: 0.95 }}
               className="space-x-4"
             >
-              
-              {isSignedIn ? (
+              <SignedOut>
+                <Button
+                  onClick={signInClick}
+                  variant="outline"
+                  className="border-2 border-yellow-400 bg-white text-gray-800 font-medium"
+                >
+                  Log In
+                </Button>
+                <Button
+                  onClick={signUpClick}
+                  className="bg-yellow-400 hover:bg-yellow-500 text-white font-medium"
+                >
+                  Sign Up
+                </Button>
+              </SignedOut>
+              <SignedIn>
                 <UserButton />
-              ) : (
-                <>
-                  <Button
-                    onClick={signInClick}
-                    variant="outline"
-                    className="border-2 border-yellow-400 bg-white text-gray-800 font-medium"
-                  >
-                    Log In
-                  </Button>
-                  <Button
-                    onClick={signUpClick}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-white font-medium"
-                  >
-                    Sign Up
-                  </Button>
-                </>
-              )}
+              </SignedIn>
             </motion.div>
           </div>
 
@@ -164,6 +161,14 @@ export default function Navbar() {
                   </Link>
                 </motion.div>
               ))}
+              <SignedIn>
+                <Link
+                  href={"/dashboard"}
+                  className="text-gray-800 hover:text-yellow-500 transition-colors"
+                >
+                  Dashboard
+                </Link>
+              </SignedIn>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -172,19 +177,26 @@ export default function Navbar() {
                 whileTap={{ scale: 0.95 }}
                 className="space-x-4"
               >
-                <Button
-                  onClick={signInClick}
-                  variant="outline"
-                  className="border-2 border-yellow-400 bg-white  text-gray-800 font-medium"
-                >
-                  Log In
-                </Button>
-                <Button
-                  onClick={signUpClick}
-                  className="bg-yellow-400 hover:bg-yellow-500 text-white font-medium"
-                >
-                  Sign Up
-                </Button>
+                <SignedOut>
+                  <Button
+                    onClick={signInClick}
+                    variant="outline"
+                    className="border-2 border-yellow-400 bg-white text-gray-800 font-medium"
+                  >
+                    Log In
+                  </Button>
+                  <Button
+                    onClick={signUpClick}
+                    className="bg-yellow-400 hover:bg-yellow-500 text-white font-medium"
+                  >
+                    Sign Up
+                  </Button>
+                </SignedOut>
+                <div className="mt-4">
+                  <SignedIn>
+                    <UserButton />
+                  </SignedIn>
+                </div>
               </motion.div>
             </motion.div>
           )}

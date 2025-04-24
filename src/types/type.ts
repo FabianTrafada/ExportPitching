@@ -20,9 +20,13 @@ export interface StaggeredListProps {
 }
 
 export interface AuthLayoutProps {
-  children: React.ReactNode
+  children: ReactNode
   title: string
   description: string
   backUrl?: string
   backLabel?: string
+}
+
+export interface DashboardLayoutProps {
+  children: ReactNode
 }
