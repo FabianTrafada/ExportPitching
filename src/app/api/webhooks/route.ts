@@ -55,13 +55,13 @@ export async function POST(req: Request) {
   // console.log('Webhook payload:', body)
 
   if(evt.type === 'user.created') {
-    const { id, email_addresses, first_name, image_url } = evt.data
+    const { id, email_addresses, username, image_url } = evt.data
     try {
       const newUser = await db.insert(users).values({
-          clerkUserId: id,
-          email: email_addresses[0].email_address,
-          name: first_name,
-          imageUrl: image_url,
+        email: email_addresses?.[0].email_address,
+        name: username,
+        imageUrl: image_url,
+        clerkUserId: id
       });
       return new Response(JSON.stringify(newUser), {
         status: 201,
