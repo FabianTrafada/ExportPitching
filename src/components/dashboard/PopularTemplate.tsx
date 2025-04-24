@@ -1,7 +1,10 @@
+export const revalidate = 60
+export const dynamicParams = true
 import { Card } from "@/components/ui/card";
 import { db } from "@/db/neon";
 import { practiceTemplates } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
+import { ChartSpline } from "lucide-react";
 import Image from "next/image";
 
 export default async function PopularTemplate() {
@@ -11,18 +14,70 @@ export default async function PopularTemplate() {
     .where(eq(practiceTemplates.isActive, true))
     .orderBy(desc(practiceTemplates.usageCount))
     .limit(1);
-
+  
+  // Function to get difficulty color
+  const getDifficultyColor = (difficulty: string) => {
+    switch(difficulty.toLowerCase()) {
+      case 'advanced':
+        return 'bg-red-100 text-red-800';
+      case 'intermediate':
+        return 'bg-orange-100 text-orange-800';
+      case 'beginner':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+    
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold mb-4">🔥 Popular Template</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templates.map((template) => (
-          <Card key={template.id} className="p-6 flex flex-col gap-4">
+      {templates.map((template) => (
+        <Card key={template.id} className="p-6 overflow-hidden">
+          <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-1">
-              <h3 className="text-xl font-semibold">{template.title}</h3>
-              <p className="text-gray-600">{template.description}</p>
+              <h3 className="text-xl font-semibold mb-2">About {template.title}</h3>
+              <p className="text-gray-600 mb-4">{template.description}</p>
+              
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <h4 className="font-medium text-sm text-gray-500">Difficulty</h4>
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(template.difficulty)}`}>
+                    {template.difficulty}
+                  </span>
+                </div>
+                <div>
+                  <h4 className="font-medium text-sm text-gray-500">Industry</h4>
+                  <p>{template.industry}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-sm text-gray-500">Target Market</h4>
+                  <div className="flex items-center gap-2">
+                    <Image
+                      width={24}
+                      height={18}
+                      src={`https://flagcdn.com/24x18/${template.targetMarketCode.toLowerCase()}.png`} 
+                      alt={template.targetMarket}
+                      className="rounded-sm"
+                    />
+                    <span>{template.targetMarket}</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium text-sm text-gray-500">Usage Count</h4>
+                  <div className="flex items-center gap-2">
+                    <ChartSpline size={18} />
+                    <span>{template.usageCount} times</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="w-full h-40 rounded-lg relative overflow-hidden">
+            <div className="w-full md:w-1/3 h-56 rounded-lg relative overflow-hidden">
+              {/* Duration badge */}
+              <div className="absolute top-2 right-2 z-10 bg-white px-3 py-1 rounded-full shadow-md text-sm font-medium">
+                {template.duration} minutes
+              </div>
+              
               {template.imageUrl ? (
                 <Image
                   src={template.imageUrl}
@@ -32,13 +87,13 @@ export default async function PopularTemplate() {
                 />
               ) : (
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-lg">
-                  <span className="text-gray-400">No Image</span>
+                  <span className="text-gray-400">Image</span>
                 </div>
               )}
             </div>
-          </Card>
-        ))}
-      </div>
+          </div>
+        </Card>
+      ))}
     </div>
   );
 }

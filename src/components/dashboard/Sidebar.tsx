@@ -107,7 +107,7 @@ export default function Sidebar() {
       </TooltipProvider>
 
       <TooltipProvider>
-        <div className='border-t border-gray-200 p-4 pr-1.5'>
+        <div className='border-t border-gray-200 p-4 pr-1.5 '>
         <Tooltip>
             <TooltipTrigger asChild>
               <button
