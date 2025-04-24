@@ -56,7 +56,7 @@ export default async function PopularTemplate() {
                     <Image
                       width={24}
                       height={18}
-                      src={`https://flagcdn.com/24x18/${template.targetMarketCode.toLowerCase()}.png`} 
+                      src={`https://flagcdn.com/24x18/${template.targetMarketCode.toLowerCase()}.svg`} 
                       alt={template.targetMarket}
                       className="rounded-sm"
                     />
