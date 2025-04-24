@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -18,6 +18,10 @@ import { UserButton, useUser } from '@clerk/nextjs';
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const { user } = useUser();
+
+  useEffect(() => {
+    document.body.setAttribute('data-sidebar', isCollapsed ? 'collapsed' : 'expanded');
+  }, [isCollapsed]);
 
   return (
     <div

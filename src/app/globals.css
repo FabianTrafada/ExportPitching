@@ -83,6 +83,14 @@
   --color-yellow-500: #EAB308; 
 }
 
+body[data-sidebar="collapsed"] .dashboard-content {
+  padding-left: 6rem; /* 5rem (w-20) + 1rem spacing */
+}
+
+body[data-sidebar="expanded"] .dashboard-content {
+  padding-left: 18rem; /* 17rem (w-68) + 1rem spacing */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
