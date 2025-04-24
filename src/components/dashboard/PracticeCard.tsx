@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Card } from "../ui/card";
+import { Card } from "@/components/ui/card";
 import { PracticeCardProps } from "@/types/type";
 
 export const revalidate = 60;
@@ -31,8 +31,9 @@ export default async function PracticeCard({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 relative">
-      <div className="h-32 bg-gray-100 relative">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 relative h-full flex flex-col p-0">
+      {/* Image section - remove any padding/margin causing the gap */}
+      <div className="bg-gray-100 relative aspect-[16/9]">
         {imageUrl ? (
           <Image src={imageUrl} alt={title} fill className="object-cover" />
         ) : (
@@ -56,32 +57,35 @@ export default async function PracticeCard({
         </div>
       </div>
 
-      <div className="p-4">
-        <h3 className="font-semibold mb-2">{title}</h3>
-        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{description}</p>
+      {/* Content section */}
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="font-semibold text-lg mb-2">{title}</h3>
+        <p className="text-sm text-gray-600 mb-3">{description}</p>
 
-        {industry && (
-          <p className="text-xs text-gray-500 mb-1">Industry: {industry}</p>
-        )}
+        <div className="mt-auto pt-2">
+          {industry && (
+            <p className="text-xs text-gray-500 mb-1">Industry: {industry}</p>
+          )}
 
-        {targetMarket && (
-          <p className="text-xs text-gray-500 mb-2">
-            Target Market: {targetMarket}
-          </p>
-        )}
+          {targetMarket && (
+            <p className="text-xs text-gray-500 mb-2">
+              Target Market: {targetMarket}
+            </p>
+          )}
 
-        {/* Flag for target market */}
-        {targetMarketCode && (
-          <div className="absolute bottom-4 left-4">
-            <Image
-              width={24}
-              height={18}
-              src={`https://flagcdn.com/${targetMarketCode.toLowerCase()}.svg`}
-              alt={`${targetMarket} flag`}
-              className="shadow-sm"
-            />
-          </div>
-        )}
+          {/* Flag for target market */}
+          {targetMarketCode && (
+            <div className="mt-2">
+              <Image
+                width={24}
+                height={18}
+                src={`https://flagcdn.com/${targetMarketCode.toLowerCase()}.svg`}
+                alt={`${targetMarket} flag`}
+                className="shadow-sm"
+              />
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   );
