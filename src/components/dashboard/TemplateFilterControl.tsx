@@ -94,7 +94,7 @@ export default function TemplateFilters({
         {/* Filter toggle button */}
         <Button
           variant="outline"
-          size="icon"
+          size="icon" 
           onClick={() => setShowFilters(!showFilters)}
           className={`h-10 w-10 ${showFilters ? 'bg-gray-100' : ''}`}
         >

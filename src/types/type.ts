@@ -47,3 +47,10 @@ export interface PracticeCardProps {
 export interface PracticeTemplateControlProps {
   templates: PracticeCardProps[];
 }
+
+export interface SearchParams {
+  search?: string;
+  difficulty?: string;
+  industry?: string;
+  page?: string;
+}

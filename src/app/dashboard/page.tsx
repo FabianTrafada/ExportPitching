@@ -6,11 +6,12 @@ import TemplateFilters from "@/components/dashboard/TemplateFilterControl";
 import Pagination from "@/components/dashboard/Pagination";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SearchParams } from "@/types/type";
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { search?: string; difficulty?: string; industry?: string; page?: string };
+  searchParams: SearchParams;
 }) {
   const search = searchParams.search || "";
   const difficulty = searchParams.difficulty || "";
