@@ -7,18 +7,22 @@ import Pagination from "@/components/dashboard/Pagination";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Use the Next.js provided type for page props
-interface PageProps {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+type Props = {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export default async function DashboardPage({ searchParams }: PageProps) {
+export default async function DashboardPage({ 
+  searchParams 
+}: Props) {
+  // Await the searchParams promise
+  const resolvedSearchParams = await searchParams;
+
   // Handle search params properly
-  const search = searchParams?.search?.toString() || "";
-  const difficulty = searchParams?.difficulty?.toString() || "";
-  const industry = searchParams?.industry?.toString() || "";
-  const pageNumber = searchParams?.page ? parseInt(searchParams.page.toString()) : 1;
+  const search = resolvedSearchParams?.search?.toString() || "";
+  const difficulty = resolvedSearchParams?.difficulty?.toString() || "";
+  const industry = resolvedSearchParams?.industry?.toString() || "";
+  const pageNumber = resolvedSearchParams?.page ? parseInt(resolvedSearchParams.page.toString()) : 1;
   
   const { templates, totalPages } = await getPracticeTemplates(
     search,
