@@ -11,12 +11,12 @@ import { SearchParams } from "@/types/type";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams?: SearchParams;
 }) {
-  const search = searchParams.search || "";
-  const difficulty = searchParams.difficulty || "";
-  const industry = searchParams.industry || "";
-  const page = parseInt(searchParams.page || "1");
+  const search = searchParams?.search || "";
+  const difficulty = searchParams?.difficulty || "";
+  const industry = searchParams?.industry || "";
+  const page = parseInt(searchParams?.page || "1");
   
   const { templates, totalPages } = await getPracticeTemplates(
     search,
