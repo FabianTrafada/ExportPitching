@@ -43,3 +43,7 @@ export interface PracticeCardProps {
   imageUrl?: string | null;
   usageCount: number;
 }
+
+export interface PracticeTemplateControlProps {
+  templates: PracticeCardProps[];
+}
