@@ -1,3 +1,4 @@
+// src/components/dashboard/Pagination.tsx
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -20,7 +21,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
   };
   
   const getPageNumbers = () => {
-    const maxPagesToShow = 5;
+    const maxPagesToShow = window.innerWidth < 640 ? 3 : 5; // Show fewer page numbers on small screens
     const pages = [];
     
     if (totalPages <= maxPagesToShow) {
@@ -33,14 +34,26 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
       let start = Math.max(2, currentPage - 1);
       let end = Math.min(totalPages - 1, currentPage + 1);
       
-      if (currentPage <= 2) {
-        end = Math.min(totalPages - 1, 4);
-      } else if (currentPage >= totalPages - 1) {
-        start = Math.max(2, totalPages - 3);
+      // Adjust for mobile
+      if (window.innerWidth < 640) {
+        if (currentPage <= 2) {
+          end = Math.min(totalPages - 1, 2);
+        } else if (currentPage >= totalPages - 1) {
+          start = Math.max(2, totalPages - 2);
+        } else {
+          start = currentPage;
+          end = currentPage;
+        }
+      } else {
+        if (currentPage <= 2) {
+          end = Math.min(totalPages - 1, 4);
+        } else if (currentPage >= totalPages - 1) {
+          start = Math.max(2, totalPages - 3);
+        }
       }
       
       if (start > 2) {
-        pages.push(-1); 
+        pages.push(-1); // Ellipsis
       }
       
       for (let i = start; i <= end; i++) {
@@ -48,7 +61,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
       }
       
       if (end < totalPages - 1) {
-        pages.push(-2); 
+        pages.push(-2); // Ellipsis
       }
       
       pages.push(totalPages);
@@ -74,7 +87,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
       {getPageNumbers().map((pageNumber, i) => {
         if (pageNumber < 0) {
           return (
-            <span key={`ellipsis-${i}`} className="px-2">
+            <span key={`ellipsis-${i}`} className="px-1 sm:px-2 text-sm">
               ...
             </span>
           );

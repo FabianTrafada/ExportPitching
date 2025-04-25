@@ -1,3 +1,4 @@
+// src/components/dashboard/Billboard.tsx
 import { getCurrentUser } from "@/actions/general.actions";
 import Image from "next/image";
 

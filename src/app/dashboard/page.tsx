@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 import {
   getPracticeTemplates,
   getUniqueDifficulties,
   getUniqueIndustries,
 } from "@/actions/general.actions";
+=======
+// src/app/dashboard/page.tsx (continued)
+import { getPracticeTemplates, getUniqueDifficulties, getUniqueIndustries } from "@/actions/general.actions";
+>>>>>>> 1ba1eb40463ce4592ef4fff152a959ab3f9b41d2
 import Billboard from "@/components/dashboard/Billboard";
 import PopularTemplate from "@/components/dashboard/PopularTemplate";
 import PracticeCard from "@/components/dashboard/PracticeCard";
@@ -39,13 +44,17 @@ export default async function DashboardPage({ searchParams }: Props) {
   const industries = await getUniqueIndustries();
 
   return (
-    <div className="dashboard-content transition-all duration-300">
+    <div className="dashboard-content transition-all duration-300 pt-12 md:pt-0">
       <Billboard />
       <PopularTemplate />
       <div className="mb-6 md:mb-8">
         <div className="flex flex-col gap-3 mb-4 md:mb-6">
           <h2 className="text-xl md:text-2xl font-bold">Practice Templates</h2>
+<<<<<<< HEAD
           <TemplateFilters
+=======
+          <TemplateFilters 
+>>>>>>> 1ba1eb40463ce4592ef4fff152a959ab3f9b41d2
             search={search}
             difficulty={difficulty}
             industry={industry}
@@ -55,16 +64,21 @@ export default async function DashboardPage({ searchParams }: Props) {
         </div>
 
         <Suspense fallback={<TemplateSkeletons />}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
             {templates.length > 0 ? (
               templates.map((template) => (
                 <PracticeCard key={template.id} {...template} />
               ))
             ) : (
+<<<<<<< HEAD
               <div className="col-span-4 text-center py-10">
                 <p className="text-gray-500">
                   No templates found. Try changing your filters.
                 </p>
+=======
+              <div className="col-span-full text-center py-10">
+                <p className="text-gray-500">No templates found. Try changing your filters.</p>
+>>>>>>> 1ba1eb40463ce4592ef4fff152a959ab3f9b41d2
               </div>
             )}
           </div>
@@ -82,6 +96,7 @@ export default async function DashboardPage({ searchParams }: Props) {
 
 function TemplateSkeletons() {
   return (
+<<<<<<< HEAD
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {Array(8)
         .fill(0)
@@ -94,6 +109,17 @@ function TemplateSkeletons() {
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-3 w-1/2" />
             </div>
+=======
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+      {Array(4).fill(0).map((_, i) => (
+        <div key={i} className="rounded-lg overflow-hidden">
+          <Skeleton className="h-32 w-full" />
+          <div className="p-3 space-y-2">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-1/2" />
+>>>>>>> 1ba1eb40463ce4592ef4fff152a959ab3f9b41d2
           </div>
         ))}
     </div>
