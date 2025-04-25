@@ -6,23 +6,25 @@ import TemplateFilters from "@/components/dashboard/TemplateFilterControl";
 import Pagination from "@/components/dashboard/Pagination";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SearchParams } from "@/types/type";
 
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
-  const search = searchParams?.search || "";
-  const difficulty = searchParams?.difficulty || "";
-  const industry = searchParams?.industry || "";
-  const page = parseInt(searchParams?.page || "1");
+// Use the Next.js provided type for page props
+interface PageProps {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
+  // Handle search params properly
+  const search = searchParams?.search?.toString() || "";
+  const difficulty = searchParams?.difficulty?.toString() || "";
+  const industry = searchParams?.industry?.toString() || "";
+  const pageNumber = searchParams?.page ? parseInt(searchParams.page.toString()) : 1;
   
   const { templates, totalPages } = await getPracticeTemplates(
     search,
     difficulty,
     industry,
-    page
+    pageNumber
   );
   
   const difficulties = await getUniqueDifficulties();
@@ -60,7 +62,7 @@ export default async function DashboardPage({
         
         {totalPages > 0 && (
           <div className="mt-6 flex justify-center">
-            <Pagination currentPage={page} totalPages={totalPages} />
+            <Pagination currentPage={pageNumber} totalPages={totalPages} />
           </div>
         )}
       </div>
