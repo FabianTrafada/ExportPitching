@@ -89,7 +89,7 @@ export default async function PopularTemplate() {
                   <div>
                     <h4 className="font-medium text-xs md:text-sm text-gray-500">Usage Count</h4>
                     <div className="flex items-center gap-2">
-                      <ChartSpline size={16} className="md:size-18" />
+                      <ChartSpline size={16} />
                       <span className="text-sm md:text-base">{template.usageCount} times</span>
                     </div>
                   </div>
