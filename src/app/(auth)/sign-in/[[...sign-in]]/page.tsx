@@ -3,9 +3,9 @@ import { SignIn } from "@clerk/nextjs";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login | ExportPitch AI",
+  title: "Sign in | ExportPitch AI",
   description:
-    "Log in to your ExportPitch AI account to access your personalized export pitch training",
+    "Sign in to your ExportPitch AI account to access your personalized export pitch training",
   robots: {
     index: false,
     follow: true,
