@@ -1,3 +1,4 @@
+// src/components/dashboard/PracticeCard.tsx
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { PracticeCardProps } from "@/types/type";
@@ -30,10 +31,16 @@ export default async function PracticeCard({
     }
   };
 
+  // Truncate description for mobile but show more on larger screens
+  const truncateDescription = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + '...';
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 relative h-full flex flex-col p-0">
-      {/* Image section - remove any padding/margin causing the gap */}
-      <div className="bg-gray-100 relative aspect-[16/9]">
+      {/* Image section with better aspect ratio for mobile */}
+      <div className="bg-gray-100 relative aspect-[3/2] md:aspect-[16/9]">
         {imageUrl ? (
           <Image src={imageUrl} alt={title} fill className="object-cover" />
         ) : (
@@ -58,27 +65,29 @@ export default async function PracticeCard({
       </div>
 
       {/* Content section */}
-      <div className="p-4 flex-1 flex flex-col">
-        <h3 className="font-semibold text-lg mb-2">{title}</h3>
-        <p className="text-sm text-gray-600 mb-3">{description}</p>
+      <div className="p-3 md:p-4 flex-1 flex flex-col">
+        <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 line-clamp-1">{title}</h3>
+        <p className="text-xs md:text-sm text-gray-600 mb-2 md:mb-3 line-clamp-2">
+          {description}
+        </p>
 
-        <div className="mt-auto pt-2">
+        <div className="mt-auto pt-1 md:pt-2">
           {industry && (
             <p className="text-xs text-gray-500 mb-1">Industry: {industry}</p>
           )}
 
           {targetMarket && (
-            <p className="text-xs text-gray-500 mb-2">
+            <p className="text-xs text-gray-500 mb-1 md:mb-2">
               Target Market: {targetMarket}
             </p>
           )}
 
           {/* Flag for target market */}
           {targetMarketCode && (
-            <div className="mt-2">
+            <div className="mt-1 md:mt-2">
               <Image
-                width={24}
-                height={18}
+                width={20}
+                height={15}
                 src={`https://flagcdn.com/${targetMarketCode.toLowerCase()}.svg`}
                 alt={`${targetMarket} flag`}
                 className="shadow-sm"
