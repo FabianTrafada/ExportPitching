@@ -1,86 +1,133 @@
-"use server"
+"use server";
 
 import { db } from "@/db/neon";
 import { practiceTemplates, users } from "@/db/schema";
-import { currentUser } from "@clerk/nextjs/server"
-import { and, eq, ilike, count, } from "drizzle-orm";
+import { CreateFeedbackParams, exportPitchFeedbackSchema } from "@/types/type";
+import { currentUser } from "@clerk/nextjs/server";
+import { and, eq, ilike, count } from "drizzle-orm";
+import { generateObject } from "ai";
+import { google } from "@ai-sdk/google";
 
 export async function getCurrentUser() {
-    const clerkUser = await currentUser();
+  const clerkUser = await currentUser();
 
-    if(!clerkUser) {
-        return null;
-    }
+  if (!clerkUser) {
+    return null;
+  }
 
-    const user = await db.query.users.findFirst({
-        where: eq(users.clerkUserId, clerkUser.id),
-    })
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkUserId, clerkUser.id),
+  });
 
-    return user
+  return user;
 }
 
 export async function getPracticeTemplates(
-    search?: string,
-    difficulty?: string,
-    industry?: string,
-    page: number = 1,
-    pageSize: number = 8
+  search?: string,
+  difficulty?: string,
+  industry?: string,
+  page: number = 1,
+  pageSize: number = 8
 ) {
-    const whereConditions = [eq(practiceTemplates.isActive, true)];
-    
-    if (search && search.trim() !== '') {
-        whereConditions.push(
-            ilike(practiceTemplates.title, `%${search}%`)
-        );
-    }
-    
-    if (difficulty && difficulty.trim() !== '') {
-        whereConditions.push(
-            eq(practiceTemplates.difficulty, difficulty)
-        );
-    }
-    
-    if (industry && industry.trim() !== '') {
-        whereConditions.push(
-            eq(practiceTemplates.industry, industry)
-        );
-    }
+  const whereConditions = [eq(practiceTemplates.isActive, true)];
 
-    const countResult = await db
-        .select({ value: count() })
-        .from(practiceTemplates)
-        .where(and(...whereConditions));
-    
-    const totalCount = countResult[0].value;
-    
-    const templates = await db.query.practiceTemplates.findMany({
-        where: and(...whereConditions),
-        orderBy: (templates, { asc }) => [asc(templates.difficulty)],
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
-    });
-    
-    return {
-        templates,
-        totalCount,
-        totalPages: Math.ceil(totalCount / pageSize)
-    }
+  if (search && search.trim() !== "") {
+    whereConditions.push(ilike(practiceTemplates.title, `%${search}%`));
+  }
+
+  if (difficulty && difficulty.trim() !== "") {
+    whereConditions.push(eq(practiceTemplates.difficulty, difficulty));
+  }
+
+  if (industry && industry.trim() !== "") {
+    whereConditions.push(eq(practiceTemplates.industry, industry));
+  }
+
+  const countResult = await db
+    .select({ value: count() })
+    .from(practiceTemplates)
+    .where(and(...whereConditions));
+
+  const totalCount = countResult[0].value;
+
+  const templates = await db.query.practiceTemplates.findMany({
+    where: and(...whereConditions),
+    orderBy: (templates, { asc }) => [asc(templates.difficulty)],
+    limit: pageSize,
+    offset: (page - 1) * pageSize,
+  });
+
+  return {
+    templates,
+    totalCount,
+    totalPages: Math.ceil(totalCount / pageSize),
+  };
 }
 
 export async function getUniqueDifficulties() {
-    const result = await db
-        .selectDistinct({ difficulty: practiceTemplates.difficulty })
-        .from(practiceTemplates)
-        .where(eq(practiceTemplates.isActive, true));
-    
-    return result.map(r => r.difficulty);
+  const result = await db
+    .selectDistinct({ difficulty: practiceTemplates.difficulty })
+    .from(practiceTemplates)
+    .where(eq(practiceTemplates.isActive, true));
+
+  return result.map((r) => r.difficulty);
 }
 
 export async function getUniqueIndustries() {
-    const result = await db
-        .selectDistinct({ industry: practiceTemplates.industry })
-        .from(practiceTemplates)
-        .where(eq(practiceTemplates.isActive, true));
-    
-    return result.map(r => r.industry);
+  const result = await db
+    .selectDistinct({ industry: practiceTemplates.industry })
+    .from(practiceTemplates)
+    .where(eq(practiceTemplates.isActive, true));
+
+  return result.map((r) => r.industry);
+}
+
+export async function createFeedback(params: CreateFeedbackParams) {
+  const { pitchingId, userId, transcript, feedbackId } = params;
+
+  try {
+    const formattedTranscript = transcript
+      .map(
+        (sentence: { role: string; content: string }) =>
+          `- ${sentence.role}: ${sentence.content}\n`
+      )
+      .join("");
+
+    const { object } = await generateObject({
+      model: google("gemini-2.0-flash-001", {
+        structuredOutputs: true,
+      }),
+      schema: exportPitchFeedbackSchema,
+      prompt: `
+            You are an AI pitching analyzing a pitching exercise. Your task is to evaluate the seller based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the seller. If there are mistakes or areas for improvement, point them out.
+        Transcript:
+        ${formattedTranscript}
+
+        Please score the candidate from 0 to 100 in the following areas. Do not add categories other than the ones provided:
+        - **Product Knowledge**: Understanding of the product features, benefits, and cultural significance.
+        - **Market Relevance**: Ability to connect the product to the target market's needs and preferences.
+        - **Handling Objections**: Skill in addressing buyer concerns (such as quality, certification, cultural fit).
+        - **Negotiation Skills**: Ability to negotiate terms like pricing, shipping, and payment while maintaining margins.
+        - **Logistics and Payment Understanding**: Knowledge of export regulations, shipping options, and international payment methods.
+        `,
+      system:
+        "You are a pitching analysis AI. Your task is to evaluate the seller based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the seller. If there are mistakes or areas for improvement, point them out.",
+    });
+
+    const feedback = {
+      feedbackId: feedbackId,
+      userId: userId,
+      totalScore: object.totalScore,
+      categoryScores: object.categoryScores,
+      strengths: object.strengths,
+      areasForImprovement: object.areasForImprovement,
+      finalAssessment: object.finalAssessment,
+      createdAt: new Date().toISOString(),
+    };
+
+
+  } catch (error) {
+    console.error("Error creating feedback:", error);
+    throw new Error("Failed to create feedback");
+  }
 }

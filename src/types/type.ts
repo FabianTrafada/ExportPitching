@@ -1,4 +1,5 @@
 import { ReactNode } from "react"
+import { z } from "zod"
 
 export interface AnimatedSectionProps {
     children: ReactNode
@@ -54,3 +55,52 @@ export interface SearchParams {
   industry?: string;
   page?: string;
 }
+
+export interface AgentProps {
+  username: string;
+  userId?: string;
+  interviewId?: string;
+  feedbackId?: string;
+  questions?: string[];
+}
+
+export interface CreateFeedbackParams {
+  pitchingId: string;
+  userId: string;
+  transcript: { role: string; content: string }[];
+  feedbackId?: string;
+}
+
+export const exportPitchFeedbackSchema = z.object({
+  totalScore: z.number(),
+  categoryScores: z.tuple([
+    z.object({
+      name: z.literal("Product Knowledge"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Market Relevance"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Handling Objections"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Negotiation Skills"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Logistics and Payment Understanding"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+  ]),
+  strengths: z.array(z.string()),
+  areasForImprovement: z.array(z.string()),
+  finalAssessment: z.string(),
+});

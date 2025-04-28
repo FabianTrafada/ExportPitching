@@ -2,11 +2,14 @@
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { PracticeCardProps } from "@/types/type";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export const revalidate = 60;
 export const dynamicParams = true;
 
 export default async function PracticeCard({
+  id,
   title,
   description,
   duration,
@@ -30,12 +33,6 @@ export default async function PracticeCard({
         return "bg-gray-200 text-gray-800";
     }
   };
-
-  // Truncate description for mobile but show more on larger screens
-  // const truncateDescription = (text: string, maxLength: number) => {
-  //   if (text.length <= maxLength) return text;
-  //   return text.slice(0, maxLength) + '...';
-  // };
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 relative h-full flex flex-col p-0">
@@ -94,6 +91,13 @@ export default async function PracticeCard({
               />
             </div>
           )}
+          <div className="mt-auto pt-4 text-right">
+          <Link href={`/practice/${id}`}>
+            <Button size="sm" variant="default">
+              Practice
+            </Button>
+          </Link>
+        </div>
         </div>
       </div>
     </Card>
