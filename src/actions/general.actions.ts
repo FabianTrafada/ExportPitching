@@ -150,3 +150,16 @@ export async function createFeedback(params: CreateFeedbackParams) {
     throw new Error("Failed to create feedback");
   }
 }
+
+export async function getPracticeById(id: number) {
+  try {
+    const template = await db.query.practiceTemplates.findFirst({
+      where: eq(practiceTemplates.id, id),
+    })
+
+    return template
+  } catch (error) {
+    console.error("Error fetching practice template:", error);
+    throw new Error("Failed to fetch practice template");
+  }
+}

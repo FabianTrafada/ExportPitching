@@ -58,7 +58,7 @@ export interface SearchParams {
 }
 
 export interface AgentProps {
-  username: string;
+  username?: string;
   userId?: number;
   pitchingId?: number;
   feedbackId?: string;
@@ -147,3 +147,8 @@ Follow the structured question flow:
     ],
   },
 };
+
+export interface RouteParams {
+  params: Promise<Record<string, string>>
+  searchParams: Promise<Record<string, string>>
+}

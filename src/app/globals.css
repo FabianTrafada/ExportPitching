@@ -99,3 +99,7 @@ body[data-sidebar="expanded"] .dashboard-content {
     @apply bg-background text-foreground;
   }
 }
+
+@utility animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
