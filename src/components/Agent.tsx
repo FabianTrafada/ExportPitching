@@ -1,7 +1,8 @@
 "use client";
 
+import { createFeedback } from "@/actions/general.actions";
 import { vapi } from "@/lib/vapi.sdk";
-import { AgentProps } from "@/types/type";
+import { AgentProps, interviewer } from "@/types/type";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -20,7 +21,7 @@ interface SavedMessage {
 export default function Agent({
   username,
   userId,
-  interviewId,
+  pitchingId,
   feedbackId,
   questions,
 }: AgentProps) {
@@ -79,7 +80,55 @@ export default function Agent({
 
   useEffect(() => {
     if (messages.length > 0) {
-        setLastMessage(messages[messages.length - 1].content);
+      setLastMessage(messages[messages.length - 1].content);
     }
-  }, [messages])
+
+    const handleGenerateFeedback = async (messages: SavedMessage[]) => {
+      console.log("Generating feedback with messages");
+
+      const { success, feedbackId: id } = await createFeedback({
+        pitchingId: pitchingId!,
+        userId: userId!,
+        transcript: messages,
+        feedbackId,
+      });
+
+      if (success && id) {
+        router.push(`/pitching/${pitchingId}/feedback`);
+      } else {
+        console.log("Error saving feedback");
+        router.push("/dashboard");
+      }
+    };
+
+    if (callStatus === CallStatus.FINISHED) {
+      handleGenerateFeedback(messages);
+    }
+  }, [messages, feedbackId, userId, pitchingId, callStatus, router]);
+
+  const handleCall = async () => {
+    setCallStatus(CallStatus.CONNECTING);
+
+    let formattedQuestions = "";
+    if (questions) {
+      formattedQuestions = questions
+        .map((question) => `- ${question}`)
+        .join("\n");
+
+      await vapi.start(interviewer, {
+        variableValues: {
+          questions: formattedQuestions,
+        },
+      });
+    }
+  };
+
+  const handleDisconnect = () => {
+    setCallStatus(CallStatus.INACTIVE);
+    vapi.stop();
+  }
+
+  return (
+    <> </>
+  )
 }

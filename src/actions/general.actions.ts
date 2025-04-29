@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/neon";
-import { practiceTemplates, users } from "@/db/schema";
+import { practiceTemplates, users, pitchFeedback } from "@/db/schema";
 import { CreateFeedbackParams, exportPitchFeedbackSchema } from "@/types/type";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq, ilike, count } from "drizzle-orm";
@@ -114,17 +114,36 @@ export async function createFeedback(params: CreateFeedbackParams) {
         "You are a pitching analysis AI. Your task is to evaluate the seller based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the seller. If there are mistakes or areas for improvement, point them out.",
     });
 
-    const feedback = {
-      feedbackId: feedbackId,
+    const feedbackData = {
+      pitchingId: pitchingId,
       userId: userId,
       totalScore: object.totalScore,
-      categoryScores: object.categoryScores,
-      strengths: object.strengths,
-      areasForImprovement: object.areasForImprovement,
+      categoryScores: JSON.stringify(object.categoryScores),
+      strengths: JSON.stringify(object.strengths),
+      areasForImprovement: JSON.stringify(object.areasForImprovement),
       finalAssessment: object.finalAssessment,
-      createdAt: new Date().toISOString(),
+      transcript: formattedTranscript,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
+    let result;
+
+    if (feedbackId) {
+      result = await db
+        .update(pitchFeedback)
+        .set(feedbackData)
+        .where(eq(pitchFeedback.id, parseInt(feedbackId)))
+        .returning();
+    } else {
+      result = await db.insert(pitchFeedback).values(feedbackData).returning();
+    }
+
+    return {
+      success: true,
+      feedbackId: result[0].id,
+      message: "Feedback created successfully",
+    }
 
   } catch (error) {
     console.error("Error creating feedback:", error);

@@ -1,3 +1,4 @@
+import { CreateAssistantDTO } from "@vapi-ai/web/dist/api"
 import { ReactNode } from "react"
 import { z } from "zod"
 
@@ -58,15 +59,15 @@ export interface SearchParams {
 
 export interface AgentProps {
   username: string;
-  userId?: string;
-  interviewId?: string;
+  userId?: number;
+  pitchingId?: number;
   feedbackId?: string;
   questions?: string[];
 }
 
 export interface CreateFeedbackParams {
-  pitchingId: string;
-  userId: string;
+  pitchingId: number;
+  userId: number;
   transcript: { role: string; content: string }[];
   feedbackId?: string;
 }
@@ -104,3 +105,45 @@ export const exportPitchFeedbackSchema = z.object({
   areasForImprovement: z.array(z.string()),
   finalAssessment: z.string(),
 });
+
+export const interviewer: CreateAssistantDTO = {
+  name: "Pitcher",
+  firstMessage:
+    "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about the product.",
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-2",
+    language: "en",
+  },
+  voice: {
+    provider: "11labs",
+    voiceId: "sarah",
+    stability: 0.4,
+    similarityBoost: 0.8,
+    speed: 0.9,
+    style: 0.5,
+    useSpeakerBoost: true,
+  },
+  model: {
+    provider: "openai",
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content: `You are a professional pitch trainer helping Indonesian sellers practice pitching their products for an international audience
+
+Interview Guidelines:
+Follow the structured question flow:
+{{questions}}
+
+- Let the user start their pitch without interruption.
+- Encourage them briefly if they pause ("keep going", "you're doing good").
+- Do not judge or correct during the pitch session.
+- After they finish, politely thank them and inform them that detailed feedback will be provided soon.
+- Keep your responses short and motivating.
+- Use professional, supportive, but straightforward language.
+- This is a real-time voice practice session, so speak naturally, briefly, and clearly..`,
+      },
+    ],
+  },
+};
