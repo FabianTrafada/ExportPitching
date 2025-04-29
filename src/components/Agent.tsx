@@ -151,7 +151,7 @@ export default function Agent({
         <div className="p-0.5 rounded-2xl flex-1 sm:basis-1/2 w-full h-[400px] max-md:hidden">
           <div className="flex flex-col gap-2 justify-center items-center bg-yellow-400 p-7 rounded-2xl min-h-full">
             <Image
-              src={user.user?.imageUrl || ""}
+              src={user.user?.imageUrl || "/placeholder.jpg"}
               alt="User Avatar"
               width={539}
               height={539}

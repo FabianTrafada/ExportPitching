@@ -94,7 +94,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
       .join("");
 
     const { object } = await generateObject({
-      model: google("gemini-2.0-flash-001", {
+      model: google("gemini-2.0-flash", {
         structuredOutputs: true,
       }),
       schema: exportPitchFeedbackSchema,
@@ -155,9 +155,19 @@ export async function getPracticeById(id: number) {
   try {
     const template = await db.query.practiceTemplates.findFirst({
       where: eq(practiceTemplates.id, id),
-    })
+    });
 
-    return template
+    if (!template) {
+      return null;
+    }
+
+    // Parse the questions string to array if it's stored as JSON string
+    return {
+      ...template,
+      questions: typeof template.questions === 'string' 
+        ? JSON.parse(template.questions) 
+        : template.questions
+    };
   } catch (error) {
     console.error("Error fetching practice template:", error);
     throw new Error("Failed to fetch practice template");
