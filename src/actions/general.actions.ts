@@ -4,7 +4,7 @@ import { db } from "@/db/neon";
 import { practiceTemplates, users, pitchFeedback } from "@/db/schema";
 import { CreateFeedbackParams, exportPitchFeedbackSchema } from "@/types/type";
 import { currentUser } from "@clerk/nextjs/server";
-import { and, eq, ilike, count } from "drizzle-orm";
+import { and, eq, ilike, count, sql } from "drizzle-orm";
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 
@@ -171,5 +171,22 @@ export async function getPracticeById(id: number) {
   } catch (error) {
     console.error("Error fetching practice template:", error);
     throw new Error("Failed to fetch practice template");
+  }
+}
+
+export async function incrementUsageCount(templateId: number) {
+  try {
+    await db
+      .update(practiceTemplates)
+      .set({
+        usageCount: sql`${practiceTemplates.usageCount} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(practiceTemplates.id, templateId));
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error incrementing usage count:', error);
+    return { success: false, error: 'Failed to increment usage count' };
   }
 }

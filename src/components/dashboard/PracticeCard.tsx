@@ -1,14 +1,13 @@
-// src/components/dashboard/PracticeCard.tsx
+"use client";
+
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { PracticeCardProps } from "@/types/type";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { incrementUsageCount } from "@/actions/general.actions";
+import { useRouter } from "next/navigation";
 
-export const revalidate = 60;
-export const dynamicParams = true;
-
-export default async function PracticeCard({
+export default function PracticeCard({
   id,
   title,
   description,
@@ -19,6 +18,8 @@ export default async function PracticeCard({
   difficulty,
   imageUrl,
 }: PracticeCardProps) {
+  const router = useRouter();
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
       case "advanced":
@@ -31,6 +32,15 @@ export default async function PracticeCard({
         return "bg-green-100 text-green-800";
       default:
         return "bg-gray-200 text-gray-800";
+    }
+  };
+
+  const handlePracticeClick = async () => {
+    try {
+      await incrementUsageCount(id);
+      router.push(`/practice/${id}`);
+    } catch (error) {
+      console.error('Error handling practice click:', error);
     }
   };
 
@@ -92,12 +102,10 @@ export default async function PracticeCard({
             </div>
           )}
           <div className="mt-auto pt-4 text-right">
-          <Link href={`/practice/${id}`}>
-            <Button size="sm" variant="default">
+            <Button size="sm" variant="default" onClick={handlePracticeClick}>
               Practice
             </Button>
-          </Link>
-        </div>
+          </div>
         </div>
       </div>
     </Card>

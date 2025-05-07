@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import QueryProvider from "@/providers/query-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -70,19 +71,21 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className} antialiased`}>
-          <ThemeProvider
-            attribute={"class"}
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <SpeedInsights />
-          </ThemeProvider>
-        </body>
-      </html>
+      <QueryProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body className={`${inter.className} antialiased`}>
+            <ThemeProvider
+              attribute={"class"}
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <SpeedInsights />
+            </ThemeProvider>
+          </body>
+        </html>
+      </QueryProvider>
     </ClerkProvider>
   );
 }

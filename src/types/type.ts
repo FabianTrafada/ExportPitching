@@ -76,27 +76,27 @@ export const exportPitchFeedbackSchema = z.object({
   totalScore: z.number(),
   categoryScores: z.tuple([
     z.object({
-      name: z.literal("Product Knowledge"),
+      name: z.literal("Communication Skills"),
       score: z.number(),
       comment: z.string(),
     }),
     z.object({
-      name: z.literal("Market Relevance"),
+      name: z.literal("Technical Knowledge"),
       score: z.number(),
       comment: z.string(),
     }),
     z.object({
-      name: z.literal("Handling Objections"),
+      name: z.literal("Problem Solving"),
       score: z.number(),
       comment: z.string(),
     }),
     z.object({
-      name: z.literal("Negotiation Skills"),
+      name: z.literal("Cultural Fit"),
       score: z.number(),
       comment: z.string(),
     }),
     z.object({
-      name: z.literal("Logistics and Payment Understanding"),
+      name: z.literal("Confidence and Clarity"),
       score: z.number(),
       comment: z.string(),
     }),
