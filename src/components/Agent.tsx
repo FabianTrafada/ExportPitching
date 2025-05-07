@@ -99,7 +99,7 @@ export default function Agent({
       });
 
       if (success && id) {
-        router.push(`/pitching/${pitchingId}/feedback`);
+        router.push(`/practice/${pitchingId}/feedback`);
       } else {
         console.log("Error saving feedback");
         router.push("/dashboard");
