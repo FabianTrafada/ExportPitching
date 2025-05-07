@@ -11,7 +11,7 @@ export default function Hero() {
       aria-labelledby="hero-heading"
     >
       {/* Background with overlay */}
-      <div className="absolute inset-0 bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center">
+      <div className="absolute inset-0 bg-[url('/hero-bg.webp')] bg-cover bg-center">
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/70"></div>
       </div>
 
@@ -74,13 +74,14 @@ export default function Hero() {
           >
             <div className="relative h-[400px] md:h-[500px] w-full">
               <Image
-                src="/placeholder.svg?height=500&width=500"
-                alt="AI-powered export pitch training platform showing an Indonesian exporter using the system"
+                src="/hero-illustration.webp"
+                alt="Illustration of ExportPitch AI platform showing an Indonesian exporter using AI-powered system to enhance international presentation skills"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-contain"
                 priority
                 loading="eager"
+                quality={90}
               />
             </div>
           </motion.div>

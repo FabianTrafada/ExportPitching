@@ -27,7 +27,7 @@ export const practiceTemplates = pgTable("practice_templates", {
     usageCount: integer("usage_count").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
-  })
+})
 
 export const pitchingSessions = pgTable("pitching_sessions", {
     id: serial("id").primaryKey(),

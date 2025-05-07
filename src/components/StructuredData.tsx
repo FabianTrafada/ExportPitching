@@ -54,11 +54,69 @@ export default function StructuredData() {
         inLanguage: "en",
       },
     }
+
+    const faqStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is ExportPitch AI?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "ExportPitch AI is an AI-powered export pitching training platform that helps Indonesian exporters enhance their presentation skills in global markets."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "How does the platform work?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Our platform uses AI to analyze your pitch, provide real-time feedback, and help you adapt to various international cultural contexts."
+          }
+        },
+        {
+          "@type": "Question",
+          name: "Is Indonesian language support available?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Yes, our platform supports both English and Indonesian languages, with training features in multiple languages to help you communicate with international buyers."
+          }
+        }
+      ]
+    }
+
+    const breadcrumbStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://exportpitch.ai"
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Features",
+          item: "https://exportpitch.ai#features"
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Pricing",
+          item: "https://exportpitch.ai#pricing"
+        }
+      ]
+    }
   
     return (
       <>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseStructuredData) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }} />
       </>
     )
   }
