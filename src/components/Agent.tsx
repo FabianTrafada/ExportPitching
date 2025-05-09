@@ -91,25 +91,68 @@ export default function Agent({
     }
 
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
-      console.log("Generating feedback with messages");
+      try {
+        console.log("[Production] Starting feedback generation", {
+          pitchingId,
+          userId,
+          messageCount: messages.length,
+          hasFeedbackId: !!feedbackId
+        });
 
-      const { success, feedbackId: id } = await createFeedback({
-        pitchingId: pitchingId!,
-        userId: userId!,
-        transcript: messages,
-        feedbackId,
-      });
+        // Validasi data sebelum mengirim ke server
+        if (!pitchingId || !userId) {
+          console.error("[Production] Missing required data", { pitchingId, userId });
+          throw new Error("Data yang diperlukan tidak lengkap");
+        }
 
-      if (success && id) {
+        if (messages.length === 0) {
+          console.error("[Production] No messages to analyze");
+          throw new Error("Tidak ada transkrip untuk dianalisis");
+        }
+
+        const params = {
+          pitchingId,
+          userId,
+          transcript: messages,
+          ...(feedbackId && feedbackId !== "$undefined" ? { feedbackId } : {})
+        };
+
+        console.log("[Production] Sending feedback request with params:", {
+          ...params,
+          transcript: `[${params.transcript.length} messages]` // Hanya log jumlah pesan untuk keamanan
+        });
+
+        const { success, feedbackId: id, message } = await createFeedback(params);
+
+        if (!success) {
+          console.error("[Production] Feedback generation failed", { message });
+          throw new Error(message || "Gagal menghasilkan feedback");
+        }
+
+        if (!id) {
+          console.error("[Production] No feedback ID returned");
+          throw new Error("ID feedback tidak ditemukan");
+        }
+
+        console.log("[Production] Feedback generated successfully", { feedbackId: id });
         router.push(`/practice/${pitchingId}/feedback`);
-      } else {
-        console.log("Error saving feedback");
+
+      } catch (error) {
+        console.error("[Production] Error in handleGenerateFeedback:", {
+          error: error instanceof Error ? error.message : "Unknown error",
+          stack: error instanceof Error ? error.stack : undefined
+        });
+
+        // Tampilkan pesan error yang user-friendly
+        alert("Maaf, terjadi kesalahan saat menghasilkan feedback. Silakan coba lagi nanti.");
         router.push("/dashboard");
       }
     };
 
     if (callStatus === CallStatus.FINISHED) {
-      handleGenerateFeedback(messages);
+      handleGenerateFeedback(messages).catch(error => {
+        console.error("[Production] Unhandled error in feedback generation:", error);
+      });
     }
   }, [messages, feedbackId, userId, pitchingId, callStatus, router]);
 
