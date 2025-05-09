@@ -86,6 +86,9 @@ export async function createFeedback(params: CreateFeedbackParams) {
   const { pitchingId, userId, transcript, feedbackId } = params;
 
   try {
+    console.log("Starting feedback generation with params:", { pitchingId, userId, feedbackId });
+    console.log("Transcript length:", transcript.length);
+
     const formattedTranscript = transcript
       .map(
         (sentence: { role: string; content: string }) =>
@@ -93,6 +96,9 @@ export async function createFeedback(params: CreateFeedbackParams) {
       )
       .join("");
 
+    console.log("Formatted transcript:", formattedTranscript);
+
+    console.log("Calling Google Gemini AI...");
     const { object } = await generateObject({
       model: google("gemini-2.0-flash", {
         structuredOutputs: true,
@@ -114,6 +120,8 @@ export async function createFeedback(params: CreateFeedbackParams) {
         "You are a pitching analysis AI. Your task is to evaluate the seller based on structured categories. Be thorough and detailed in your analysis. Don't be lenient with the seller. If there are mistakes or areas for improvement, point them out.",
     });
 
+    console.log("AI response received:", object);
+
     const feedbackData = {
       pitchingId: pitchingId,
       userId: userId,
@@ -127,17 +135,29 @@ export async function createFeedback(params: CreateFeedbackParams) {
       updatedAt: new Date(),
     };
 
+    console.log("Prepared feedback data:", feedbackData);
+
     let result;
 
     if (feedbackId) {
+      console.log("Updating existing feedback with ID:", feedbackId);
       result = await db
         .update(pitchFeedback)
-        .set(feedbackData)
+        .set({
+          ...feedbackData,
+          totalScore: feedbackData.totalScore.toString()
+        })
         .where(eq(pitchFeedback.id, parseInt(feedbackId)))
         .returning();
     } else {
-      result = await db.insert(pitchFeedback).values(feedbackData).returning();
+      console.log("Creating new feedback");
+      result = await db.insert(pitchFeedback).values({
+        ...feedbackData,
+        totalScore: feedbackData.totalScore.toString()
+      }).returning();
     }
+
+    console.log("Database operation result:", result);
 
     return {
       success: true,
@@ -146,8 +166,13 @@ export async function createFeedback(params: CreateFeedbackParams) {
     }
 
   } catch (error) {
-    console.error("Error creating feedback:", error);
-    throw new Error("Failed to create feedback");
+    console.error("Detailed error in createFeedback:", {
+      error,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      errorStack: error instanceof Error ? error.stack : undefined,
+      params: { pitchingId, userId, feedbackId }
+    });
+    throw new Error(`Failed to create feedback: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

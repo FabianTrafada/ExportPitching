@@ -63,7 +63,9 @@ export default function Agent({
     };
 
     const onError = (error: Error) => {
-      console.log("Error:", error);
+      console.error("Vapi Error:", error);
+      setCallStatus(CallStatus.INACTIVE);
+      alert(`Terjadi kesalahan: ${error.message}. Silakan coba lagi nanti.`);
     };
 
     vapi.on("call-start", onCallStart);
@@ -112,19 +114,25 @@ export default function Agent({
   }, [messages, feedbackId, userId, pitchingId, callStatus, router]);
 
   const handleCall = async () => {
-    setCallStatus(CallStatus.CONNECTING);
+    try {
+      setCallStatus(CallStatus.CONNECTING);
 
-    let formattedQuestions = "";
-    if (questions) {
-      formattedQuestions = questions
-        .map((question) => `- ${question}`)
-        .join("\n");
+      let formattedQuestions = "";
+      if (questions) {
+        formattedQuestions = questions
+          .map((question) => `- ${question}`)
+          .join("\n");
 
-      await vapi.start(interviewer, {
-        variableValues: {
-          questions: formattedQuestions,
-        },
-      });
+        await vapi.start(interviewer, {
+          variableValues: {
+            questions: formattedQuestions,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error starting call:", error);
+      setCallStatus(CallStatus.INACTIVE);
+      alert(`Gagal memulai panggilan: ${error instanceof Error ? error.message : 'Unknown error'}. Silakan coba lagi nanti.`);
     }
   };
 

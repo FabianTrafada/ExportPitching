@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, timestamp, text, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, timestamp, text, boolean, decimal } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
@@ -42,7 +42,7 @@ export const pitchFeedback = pgTable("pitch_feedback", {
     id: serial("id").primaryKey(),
     pitchingId: integer("pitching_id").references(() => pitchingSessions.id).notNull(),
     userId: integer("user_id").references(() => users.id).notNull(),
-    totalScore: integer("total_score").notNull(),
+    totalScore: decimal("total_score", { precision: 5, scale: 2 }).notNull(),
     categoryScores: text("category_scores").notNull(), // Stored as JSON string
     strengths: text("strengths").notNull(), // Stored as JSON array string
     areasForImprovement: text("areas_for_improvement").notNull(), // Stored as JSON array string
