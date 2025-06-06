@@ -74,7 +74,7 @@ export default function Hero() {
           >
             <div className="relative h-[400px] md:h-[500px] w-full">
               <Image
-                src="/hero-illustration.webp"
+                src="/hero-illustration.png"
                 alt="Illustration of ExportPitch AI platform showing an Indonesian exporter using AI-powered system to enhance international presentation skills"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"

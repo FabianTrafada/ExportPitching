@@ -3,6 +3,4 @@ export const navItems = [
     { name: "Features", href: "#features" },
     { name: "Benefits", href: "#benefits" },
     { name: "Testimonials", href: "#testimonials" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Call To Action", href: "#cta" },
 ];

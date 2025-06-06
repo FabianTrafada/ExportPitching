@@ -84,11 +84,19 @@
 }
 
 body[data-sidebar="collapsed"] .dashboard-content {
-  padding-left: 6rem; /* 5rem (w-20) + 1rem spacing */
+  margin-left: 5rem; /* w-20 */
+  width: calc(100% - 5rem);
+  transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
 body[data-sidebar="expanded"] .dashboard-content {
-  padding-left: 18rem; /* 17rem (w-68) + 1rem spacing */
+  margin-left: 17rem; /* w-68 */
+  width: calc(100% - 17rem);
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.dashboard-content {
+  will-change: margin, width;
 }
 
 @layer base {
@@ -102,4 +110,16 @@ body[data-sidebar="expanded"] .dashboard-content {
 
 @utility animate-fadeIn {
   animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Remove focus outlines for mouse users but keep them for keyboard navigation */
+*:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Preserve focus styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #F59E0B !important;
+  outline-offset: 2px;
 }

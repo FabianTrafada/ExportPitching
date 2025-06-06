@@ -8,6 +8,7 @@ import PopularTemplate from "@/components/dashboard/PopularTemplate";
 import PracticeCard from "@/components/dashboard/PracticeCard";
 import TemplateFilters from "@/components/dashboard/TemplateFilterControl";
 import Pagination from "@/components/dashboard/Pagination";
+import UserCredits from "@/components/dashboard/UserCredits";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -24,6 +25,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   const search = resolvedSearchParams?.search?.toString() || "";
   const difficulty = resolvedSearchParams?.difficulty?.toString() || "";
   const industry = resolvedSearchParams?.industry?.toString() || "";
+  const sortBy = resolvedSearchParams?.sortBy?.toString() || "default";
   const pageNumber = resolvedSearchParams?.page
     ? parseInt(resolvedSearchParams.page.toString())
     : 1;
@@ -32,7 +34,9 @@ export default async function DashboardPage({ searchParams }: Props) {
     search,
     difficulty,
     industry,
-    pageNumber
+    pageNumber,
+    8,
+    sortBy
   );
 
   const difficulties = await getUniqueDifficulties();
@@ -41,6 +45,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   return (
     <div className="dashboard-content transition-all duration-300 pt-12 md:pt-0">
       <Billboard />
+      <UserCredits />
       <PopularTemplate />
       <div className="mb-6 md:mb-8">
         <div className="flex flex-col gap-3 mb-4 md:mb-6">
@@ -49,6 +54,7 @@ export default async function DashboardPage({ searchParams }: Props) {
             search={search}
             difficulty={difficulty}
             industry={industry}
+            sortBy={sortBy}
             difficulties={difficulties}
             industries={industries}
           />

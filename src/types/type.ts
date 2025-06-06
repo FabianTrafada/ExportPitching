@@ -1,6 +1,7 @@
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api"
 import { ReactNode } from "react"
 import { z } from "zod"
+import * as React from "react"
 
 export interface AnimatedSectionProps {
     children: ReactNode
@@ -131,4 +132,146 @@ Follow the structured question flow:
 export interface RouteParams {
   params: Promise<Record<string, string>>
   searchParams: Promise<Record<string, string>>
+}
+
+export interface FeedbackReadyEmailProps {
+  userName: string;
+  templateName: string;
+  feedbackId: number;
+  score: number;
+  strengths: string[];
+  improvements: string[];
+  date: string;
+}
+
+export interface PracticeReminderEmailProps {
+  userName: string;
+  daysSinceLastPractice: number;
+  suggestedTemplates: {
+    id: number;
+    name: string;
+    industry: string;
+    difficulty: string;
+  }[];
+  tipOfTheDay: string;
+}
+
+export interface CreditUpdateEmailProps {
+  userName: string;
+  creditsRemaining: number;
+  creditsUsed?: number;
+  creditsPurchased?: number;
+  promoCode?: string;
+  promoDiscount?: number;
+}
+
+export interface NotificationPreferences {
+  emailNotifications: boolean;
+  feedbackAlerts: boolean;
+}
+
+export interface NotificationSettingsFormProps {
+  initialPreferences: NotificationPreferences;
+}
+
+export interface FeedbackNotificationData {
+  templateName: string;
+  feedbackId: number;
+  score: number;
+  strengths: string[];
+  improvements: string[];
+}
+
+export interface CreditNotificationData {
+  creditsRemaining: number;
+  creditsUsed?: number;
+  creditsPurchased?: number;
+  promoCode?: string;
+  promoDiscount?: number;
+}
+
+export interface PracticeNotificationData {
+  daysSinceLastPractice: number;
+  suggestedTemplates: {
+    id: number;
+    name: string;
+    industry: string;
+    difficulty: string;
+  }[];
+  tipOfTheDay: string;
+}
+
+export interface TemplateFilterProps {
+  search: string;
+  difficulty: string;
+  industry: string;
+  sortBy: string;
+  difficulties: string[];
+  industries: string[];
+}
+
+// Note: This interface should be used from '@/components/ui/badge.tsx' directly
+// It's included here for documentation purposes only
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: string;
+  size?: string;
+}
+
+export interface TemplateProps {
+  id: number;
+  title: string;
+  difficulty: string;
+  industry: string;
+  targetMarket: string;
+  imageUrl: string | null;
+  usageCount: number;
+}
+
+export interface RecommendedTemplatesProps {
+  templates: TemplateProps[];
+  isLoading?: boolean;
+}
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+}
+
+export interface PracticeSession {
+  id: number;
+  status: string;
+  createdAt: Date | null;
+  completedAt: Date | null;
+  template: {
+    id: number;
+    title: string;
+    difficulty: string;
+    industry: string;
+    targetMarket: string;
+    imageUrl: string | null;
+  };
+}
+
+export interface RecentPracticeSessionsProps {
+  sessions: PracticeSession[];
+  isLoading?: boolean;
+}
+
+export interface TemplateFiltersProps {
+  search: string;
+  difficulty: string;
+  industry: string;
+  sortBy: string;
+  difficulties: string[];
+  industries: string[];
+}
+
+export interface UserSettingsFormProps {
+  initialData: {
+    name: string;
+    email: string;
+    imageUrl: string;
+    username?: string;
+  };
 }

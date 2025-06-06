@@ -1,6 +1,6 @@
 export const testimonials = [
     {
-      name: "Budi Santoso",
+      name: "Fabiansky Trafada Perkasa",
       company: "Batik Exports Indonesia",
       image: "/placeholder.svg?height=100&width=100",
       quote:
@@ -8,7 +8,7 @@ export const testimonials = [
       stars: 5,
     },
     {
-      name: "Siti Rahayu",
+      name: "Arjzen Junika Imato",
       company: "Spice Trade Co.",
       image: "/placeholder.svg?height=100&width=100",
       quote:
@@ -16,7 +16,7 @@ export const testimonials = [
       stars: 5,
     },
     {
-      name: "Agus Wijaya",
+      name: "Kent Gianandra Athallah",
       company: "Furniture Crafts Indonesia",
       image: "/placeholder.svg?height=100&width=100",
       quote:

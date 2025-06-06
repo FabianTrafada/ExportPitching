@@ -1,12 +1,13 @@
 "use server";
 
 import { db } from "@/db/neon";
-import { practiceTemplates, users, pitchFeedback } from "@/db/schema";
+import { practiceTemplates, users, pitchFeedback, pitchingSessions } from "@/db/schema";
 import { CreateFeedbackParams, exportPitchFeedbackSchema } from "@/types/type";
 import { currentUser } from "@clerk/nextjs/server";
 import { and, eq, ilike, count, sql } from "drizzle-orm";
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
+import { notifyFeedbackReady } from '@/lib/notification-manager';
 
 export async function getCurrentUser() {
   const clerkUser = await currentUser();
@@ -27,7 +28,8 @@ export async function getPracticeTemplates(
   difficulty?: string,
   industry?: string,
   page: number = 1,
-  pageSize: number = 8
+  pageSize: number = 8,
+  sortBy: string = "default"
 ) {
   const whereConditions = [eq(practiceTemplates.isActive, true)];
 
@@ -50,15 +52,57 @@ export async function getPracticeTemplates(
 
   const totalCount = countResult[0].value;
 
-  const templates = await db.query.practiceTemplates.findMany({
+  // First, get all templates based on where conditions
+  const templatesList = await db.query.practiceTemplates.findMany({
     where: and(...whereConditions),
-    orderBy: (templates, { asc }) => [asc(templates.difficulty)],
-    limit: pageSize,
-    offset: (page - 1) * pageSize,
   });
+  
+  // Apply sorting based on the sortBy parameter
+  const sortedTemplates = [...templatesList]; // Create a copy to sort
+  
+  switch (sortBy) {
+    case "popularity":
+      sortedTemplates.sort((a, b) => b.usageCount - a.usageCount);
+      break;
+    case "newest":
+      sortedTemplates.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+      break;
+    case "difficulty_asc":
+      sortedTemplates.sort((a, b) => {
+        // Custom sort for difficulty levels
+        const difficultyRank: Record<string, number> = {
+          "Beginner": 1,
+          "Intermediate": 2,
+          "Advanced": 3
+        };
+        return (difficultyRank[a.difficulty] || 99) - (difficultyRank[b.difficulty] || 99);
+      });
+      break;
+    case "difficulty_desc":
+      sortedTemplates.sort((a, b) => {
+        // Custom sort for difficulty levels (reversed)
+        const difficultyRank: Record<string, number> = {
+          "Beginner": 1,
+          "Intermediate": 2,
+          "Advanced": 3
+        };
+        return (difficultyRank[b.difficulty] || 99) - (difficultyRank[a.difficulty] || 99);
+      });
+      break;
+    default:
+      // Default sorting - alphabetical by title
+      sortedTemplates.sort((a, b) => a.title.localeCompare(b.title));
+  }
+  
+  // Apply pagination
+  const paginatedTemplates = sortedTemplates.slice((page - 1) * pageSize, page * pageSize);
 
   return {
-    templates,
+    templates: paginatedTemplates,
     totalCount,
     totalPages: Math.ceil(totalCount / pageSize),
   };
@@ -155,6 +199,44 @@ export async function createFeedback(params: CreateFeedbackParams) {
         ...feedbackData,
         totalScore: feedbackData.totalScore.toString()
       }).returning();
+
+      // Update pitching session status to completed
+      await db.update(pitchingSessions)
+        .set({
+          status: "completed",
+          completedAt: new Date()
+        })
+        .where(eq(pitchingSessions.id, pitchingId));
+      
+      console.log("Updated pitching session status to completed");
+      
+      // Send feedback ready notification
+      try {
+        // Get template name
+        const sessionDetails = await db.query.pitchingSessions.findFirst({
+          where: eq(pitchingSessions.id, pitchingId),
+          with: {
+            template: true,
+          },
+        });
+        
+        if (sessionDetails?.template) {
+          // Send notification
+          await notifyFeedbackReady(
+            result[0].userId.toString(), 
+            {
+              templateName: sessionDetails.template.title,
+              feedbackId: result[0].id,
+              score: parseFloat(result[0].totalScore),
+              strengths: JSON.parse(result[0].strengths),
+              improvements: JSON.parse(result[0].areasForImprovement),
+            }
+          );
+        }
+      } catch (notificationError) {
+        // Don't fail the whole operation if notification fails
+        console.error("Failed to send feedback notification:", notificationError);
+      }
     }
 
     console.log("Database operation result:", result);
@@ -213,5 +295,42 @@ export async function incrementUsageCount(templateId: number) {
   } catch (error) {
     console.error('Error incrementing usage count:', error);
     return { success: false, error: 'Failed to increment usage count' };
+  }
+}
+
+export async function getUserPitchFeedback(userId: number) {
+  try {
+    // Join pitchFeedback with pitchingSessions and practiceTemplates
+    const result = await db.query.pitchFeedback.findMany({
+      where: eq(pitchFeedback.userId, userId),
+      with: {
+        pitchingSession: {
+          columns: {
+            id: true,
+            status: true,
+            createdAt: true,
+            completedAt: true,
+          },
+          with: {
+            template: {
+              columns: {
+                id: true,
+                title: true,
+                difficulty: true,
+                industry: true,
+                targetMarket: true,
+                imageUrl: true,
+              }
+            }
+          }
+        }
+      },
+      orderBy: (feedback, { desc }) => [desc(feedback.createdAt)]
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching user pitch feedback:", error);
+    throw new Error("Failed to fetch user pitch feedback");
   }
 }

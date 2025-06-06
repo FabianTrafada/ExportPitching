@@ -1,4 +1,5 @@
 import { pgTable, serial, varchar, integer, timestamp, text, boolean, decimal } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
@@ -8,6 +9,16 @@ export const users = pgTable('users', {
     imageUrl: varchar('image_url', { length: 255 }).notNull(),
     clerkUserId: varchar('clerk_user_id', { length: 255 }).notNull().unique(),
     credit: integer('credit').notNull().default(5),
+    role: varchar('role', { length: 20 }).notNull().default('user'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export const notificationPreferences = pgTable('notification_preferences', {
+    id: serial('id').primaryKey(),
+    userId: integer('user_id').references(() => users.id).notNull(),
+    emailNotifications: boolean('email_notifications').notNull().default(true),
+    feedbackAlerts: boolean('feedback_alerts').notNull().default(true),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -50,3 +61,44 @@ export const pitchFeedback = pgTable("pitch_feedback", {
     transcript: text("transcript").notNull(), // Store the full transcript
     createdAt: timestamp("created_at").defaultNow(),
 });
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+    pitchingSessions: many(pitchingSessions),
+    pitchFeedback: many(pitchFeedback),
+    notificationPreferences: many(notificationPreferences),
+}));
+
+export const practiceTemplatesRelations = relations(practiceTemplates, ({ many }) => ({
+    pitchingSessions: many(pitchingSessions),
+}));
+
+export const pitchingSessionsRelations = relations(pitchingSessions, ({ one, many }) => ({
+    user: one(users, {
+        fields: [pitchingSessions.userId],
+        references: [users.id],
+    }),
+    template: one(practiceTemplates, {
+        fields: [pitchingSessions.templateId],
+        references: [practiceTemplates.id],
+    }),
+    feedback: many(pitchFeedback),
+}));
+
+export const pitchFeedbackRelations = relations(pitchFeedback, ({ one }) => ({
+    user: one(users, {
+        fields: [pitchFeedback.userId],
+        references: [users.id],
+    }),
+    pitchingSession: one(pitchingSessions, {
+        fields: [pitchFeedback.pitchingId],
+        references: [pitchingSessions.id],
+    }),
+}));
+
+export const notificationPreferencesRelations = relations(notificationPreferences, ({ one }) => ({
+    user: one(users, {
+        fields: [notificationPreferences.userId],
+        references: [users.id],
+    }),
+}));

@@ -1,10 +1,8 @@
 import Benefits from "@/components/Benefits";
-import CallToAction from "@/components/CallToAction";
 import Features from "@/components/Features";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
-import Pricing from "@/components/Pricing";
 import StructuredData from "@/components/StructuredData";
 import Testimonials from "@/components/Testimonials";
 
@@ -24,12 +22,6 @@ export default function Home() {
       </section>
       <section id="testimonials">
         <Testimonials />
-      </section>
-      <section id="pricing">
-        <Pricing />
-      </section>
-      <section id="cta">
-        <CallToAction />
       </section>
       <Footer />
     </main>
