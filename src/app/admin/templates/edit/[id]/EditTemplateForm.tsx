@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { updateTemplate } from "@/actions/admin.actions";
+import ImageUploader from "@/components/ImageUploader";
 
 interface TemplateType {
   id: number;
@@ -62,10 +63,40 @@ export default function EditTemplateForm({ initialTemplate }: { initialTemplate:
     industry: initialTemplate?.industry || "",
     targetMarket: initialTemplate?.targetMarket || "",
     targetMarketCode: initialTemplate?.targetMarketCode || "",
-    imageUrl: initialTemplate?.imageUrl || null,
+    imageUrl: initialTemplate?.imageUrl || "",
     isActive: initialTemplate?.isActive ?? true,
     usageCount: initialTemplate?.usageCount || 0,
   });
+
+  // All hooks must be called before any early returns
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTemplate(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
+
+  const handleSelectChange = useCallback((name: string, value: string) => {
+    setTemplate(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  }, []);
+
+  const handleSwitchChange = useCallback((name: string, checked: boolean) => {
+    setTemplate(prev => ({
+      ...prev,
+      [name]: checked,
+    }));
+  }, []);
+
+  const handleImageChange = useCallback((url: string) => {
+    setTemplate(prev => ({
+      ...prev,
+      imageUrl: url,
+    }));
+  }, []);
 
   // Display error if template is not found
   if (!initialTemplate) {
@@ -85,39 +116,58 @@ export default function EditTemplateForm({ initialTemplate }: { initialTemplate:
     );
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setTemplate({
-      ...template,
-      [name]: value,
-    });
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setTemplate({
-      ...template,
-      [name]: value,
-    });
-  };
-
-  const handleSwitchChange = (name: string, checked: boolean) => {
-    setTemplate({
-      ...template,
-      [name]: checked,
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
 
     try {
-      // Format questions as JSON if they're provided as comma-separated or line-separated text
-      const formattedQuestions = template.questions
-        .split("\n")
-        .filter(q => q.trim() !== "")
-        .map(q => q.trim());
+      // Smart question parsing - supports multiple formats (same as create form)
+      let formattedQuestions: string[] = [];
+      
+      const questionsText = template.questions.trim();
+      
+      // Check if it looks like comma-separated quoted format
+      if (questionsText.includes('",') && (questionsText.startsWith('"') || questionsText.startsWith('['))) {
+        try {
+          // Try to parse as JSON array first
+          if (questionsText.startsWith('[')) {
+            formattedQuestions = JSON.parse(questionsText);
+          } else {
+            // Handle comma-separated quoted strings
+            const cleanedText = questionsText
+              .replace(/^["'\s]+|["'\s]+$/g, '') // Remove leading/trailing quotes and spaces
+              .replace(/",\s*"/g, '"|"') // Replace "," with "|"
+              .replace(/'\s*,\s*'/g, "|") // Handle single quotes too
+              .replace(/,\s*"/g, '|"') // Handle cases without leading quote
+              .replace(/"\s*,/g, '"|'); // Handle cases without trailing quote
+            
+            formattedQuestions = cleanedText
+              .split('|')
+              .map(q => q.replace(/^["'\s]+|["'\s]+$/g, '').trim())
+              .filter(q => q.length > 0);
+          }
+        } catch (parseError) {
+          console.warn('Failed to parse as comma-separated format, falling back to line-separated:', parseError);
+          // Fallback to line-separated parsing
+          formattedQuestions = questionsText
+            .split("\n")
+            .filter(q => q.trim() !== "")
+            .map(q => q.trim());
+        }
+      } else {
+        // Standard line-separated format
+        formattedQuestions = questionsText
+          .split("\n")
+          .filter(q => q.trim() !== "")
+          .map(q => q.trim());
+      }
+
+      // Validate we have questions
+      if (formattedQuestions.length === 0) {
+        setError("Please enter at least one question");
+        return;
+      }
 
       const response = await updateTemplate({
         ...template,
@@ -188,14 +238,30 @@ export default function EditTemplateForm({ initialTemplate }: { initialTemplate:
                 </div>
 
                 <div>
-                  <Label htmlFor="questions" className="mb-2">Questions (one per line)*</Label>
+                  <Label htmlFor="questions" className="mb-2">Questions*</Label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Supports multiple formats:
+                    <br />• One question per line
+                    <br />• Comma-separated quoted strings: &quot;Question 1&quot;, &quot;Question 2&quot;
+                    <br />• JSON array: [&quot;Question 1&quot;, &quot;Question 2&quot;]
+                  </p>
                   <Textarea
                     id="questions"
                     name="questions"
                     value={template.questions}
                     onChange={handleChange}
-                    placeholder="Enter questions separated by line breaks"
-                    rows={5}
+                    placeholder={`Enter questions in any of these formats:
+
+Line format:
+What makes your product unique?
+How do you ensure quality?
+
+Comma format:
+"What makes your product unique?", "How do you ensure quality?"
+
+JSON format:
+["What makes your product unique?", "How do you ensure quality?"]`}
+                    rows={8}
                     required
                   />
                 </div>
@@ -288,14 +354,16 @@ export default function EditTemplateForm({ initialTemplate }: { initialTemplate:
                 </div>
 
                 <div>
-                  <Label htmlFor="imageUrl" className="mb-2">Image URL</Label>
-                  <Input
-                    id="imageUrl"
-                    name="imageUrl"
+                  <Label htmlFor="imageUrl" className="mb-2">Image</Label>
+                  <ImageUploader 
                     value={template.imageUrl || ""}
-                    onChange={handleChange}
-                    placeholder="URL to template image"
+                    onChange={handleImageChange}
                   />
+                  {!template.imageUrl && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      Please upload an image for the template
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

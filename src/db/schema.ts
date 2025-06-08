@@ -8,7 +8,7 @@ export const users = pgTable('users', {
     password: varchar('password', { length: 255 }),
     imageUrl: varchar('image_url', { length: 255 }).notNull(),
     clerkUserId: varchar('clerk_user_id', { length: 255 }).notNull().unique(),
-    credit: integer('credit').notNull().default(5),
+    credit: integer('credit').notNull().default(50  ),
     role: varchar('role', { length: 20 }).notNull().default('user'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),

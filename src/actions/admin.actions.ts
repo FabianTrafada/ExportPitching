@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/neon";
-import { practiceTemplates, users } from "@/db/schema";
+import { practiceTemplates, users, pitchingSessions, pitchFeedback } from "@/db/schema";
 import { eq, sql, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
@@ -213,12 +213,48 @@ export async function updateTemplate(templateData: any) {
   }
 }
 
-// Delete template
+// Delete template with cascade deletion
 export async function deleteTemplate(id: number) {
   try {
     await verifyAdmin();
 
-    await db.delete(practiceTemplates)
+    // Step 1: Get all pitching sessions for this template
+    const sessions = await db
+      .select({ id: pitchingSessions.id })
+      .from(pitchingSessions)
+      .where(eq(pitchingSessions.templateId, id));
+
+    // Step 2: Delete all pitch feedback for these sessions
+    if (sessions.length > 0) {
+      const sessionIds = sessions.map(session => session.id);
+      
+      // Delete pitch feedback that references these sessions
+      for (const sessionId of sessionIds) {
+        try {
+          await db
+            .delete(pitchFeedback)
+            .where(eq(pitchFeedback.pitchingId, sessionId));
+        } catch (feedbackError) {
+          console.warn(`Failed to delete feedback for session ${sessionId}:`, feedbackError);
+          // Continue with other deletions even if one fails
+        }
+      }
+    }
+
+    // Step 3: Delete all pitching sessions for this template
+    try {
+      await db
+        .delete(pitchingSessions)
+        .where(eq(pitchingSessions.templateId, id));
+    } catch (sessionError) {
+      console.error('Error deleting pitching sessions:', sessionError);
+      // If sessions can't be deleted, we shouldn't delete the template
+      throw new Error('Failed to delete related practice sessions. Please try again.');
+    }
+
+    // Step 4: Finally, delete the template itself
+    await db
+      .delete(practiceTemplates)
       .where(eq(practiceTemplates.id, id));
 
     revalidatePath('/admin/templates');
@@ -226,6 +262,7 @@ export async function deleteTemplate(id: number) {
 
     return {
       success: true,
+      message: 'Template and all related data deleted successfully',
     };
   } catch (error) {
     console.error('Error deleting template:', error);

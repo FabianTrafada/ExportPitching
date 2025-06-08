@@ -5,9 +5,17 @@ import { Check } from "lucide-react";
 
 import AnimatedSection from "@/components/AnimatedSection";
 import { benefits } from "@/constants/benefits";
-import Image from "next/image";
 
 export default function Benefits() {
+  const handleVideoClick = (e: React.MouseEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (video.requestFullscreen) {
+      video.requestFullscreen().catch((err) => {
+        console.error("Error attempting to enable fullscreen:", err);
+      });
+    }
+  };
+
   return (
     <section
       id="benefits"
@@ -62,14 +70,18 @@ export default function Benefits() {
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <Image
-                src="/placeholder.svg?height=400&width=600"
-                alt="Indonesian exporter successfully presenting products to international buyers"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover rounded-lg"
-              />
-              <div className="absolute inset-0 bg-yellow-400/20 rounded-lg"></div>
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                onClick={handleVideoClick}
+                className="w-full h-full object-cover rounded-lg cursor-pointer"
+                aria-label="Indonesian exporter successfully presenting products to international buyers"
+              >
+                <source src="/demo.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </motion.div>
           </AnimatedSection>
         </div>

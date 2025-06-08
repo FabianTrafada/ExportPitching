@@ -77,44 +77,6 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-6 text-gray-900">Resources</h3>
-            <nav aria-label="Resources">
-              <ul className="space-y-3">
-                <li>
-                  <Link href="#" className="text-gray-500 hover:text-yellow-500 transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-500 hover:text-yellow-500 transition-colors">
-                    Market Research
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-500 hover:text-yellow-500 transition-colors">
-                    Export Guides
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-500 hover:text-yellow-500 transition-colors">
-                    Success Stories
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-500 hover:text-yellow-500 transition-colors">
-                    FAQ
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-500 hover:text-yellow-500 transition-colors">
-                    Support
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          <div>
             <h3 className="text-lg font-bold mb-6 text-gray-900">Contact Us</h3>
             <address className="not-italic">
               <ul className="space-y-4">

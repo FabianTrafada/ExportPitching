@@ -22,7 +22,7 @@ export async function startPracticeSession(id: number) {
     await db
       .update(users)
       .set({
-        credit: user.credit - 1,
+        credit: user.credit - 10,
         updatedAt: new Date(),
       })
       .where(eq(users.id, user.id));

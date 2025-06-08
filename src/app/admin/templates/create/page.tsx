@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,27 +35,27 @@ export default function CreateTemplatePage() {
     imageUrl: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setTemplate({
-      ...template,
+    setTemplate(prev => ({
+      ...prev,
       [name]: value,
-    });
-  };
+    }));
+  }, []);
 
-  const handleSelectChange = (name: string, value: string) => {
-    setTemplate({
-      ...template,
+  const handleSelectChange = useCallback((name: string, value: string) => {
+    setTemplate(prev => ({
+      ...prev,
       [name]: value,
-    });
-  };
+    }));
+  }, []);
 
-  const handleImageChange = (url: string) => {
-    setTemplate({
-      ...template,
+  const handleImageChange = useCallback((url: string) => {
+    setTemplate(prev => ({
+      ...prev,
       imageUrl: url,
-    })
-  }
+    }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,11 +63,52 @@ export default function CreateTemplatePage() {
     setError("");
 
     try {
-      // Format questions as JSON if they're provided as comma-separated or line-separated text
-      const formattedQuestions = template.questions
-        .split("\n")
-        .filter(q => q.trim() !== "")
-        .map(q => q.trim());
+      // Smart question parsing - supports both formats
+      let formattedQuestions: string[] = [];
+      
+      const questionsText = template.questions.trim();
+      
+      // Check if it looks like comma-separated quoted format
+      if (questionsText.includes('",') && (questionsText.startsWith('"') || questionsText.startsWith('['))) {
+        try {
+          // Try to parse as JSON array first
+          if (questionsText.startsWith('[')) {
+            formattedQuestions = JSON.parse(questionsText);
+          } else {
+            // Handle comma-separated quoted strings
+            const cleanedText = questionsText
+              .replace(/^["'\s]+|["'\s]+$/g, '') // Remove leading/trailing quotes and spaces
+              .replace(/",\s*"/g, '"|"') // Replace "," with "|"
+              .replace(/'\s*,\s*'/g, "|") // Handle single quotes too
+              .replace(/,\s*"/g, '|"') // Handle cases without leading quote
+              .replace(/"\s*,/g, '"|'); // Handle cases without trailing quote
+            
+            formattedQuestions = cleanedText
+              .split('|')
+              .map(q => q.replace(/^["'\s]+|["'\s]+$/g, '').trim())
+              .filter(q => q.length > 0);
+          }
+        } catch (parseError) {
+          console.warn('Failed to parse as comma-separated format, falling back to line-separated:', parseError);
+          // Fallback to line-separated parsing
+          formattedQuestions = questionsText
+            .split("\n")
+            .filter(q => q.trim() !== "")
+            .map(q => q.trim());
+        }
+      } else {
+        // Standard line-separated format
+        formattedQuestions = questionsText
+          .split("\n")
+          .filter(q => q.trim() !== "")
+          .map(q => q.trim());
+      }
+
+      // Validate we have questions
+      if (formattedQuestions.length === 0) {
+        setError("Please enter at least one question");
+        return;
+      }
 
       const response = await createTemplate({
         ...template,
@@ -138,14 +179,30 @@ export default function CreateTemplatePage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="questions" className="mb-2">Questions (one per line)*</Label>
+                  <Label htmlFor="questions" className="mb-2">Questions*</Label>
+                  <p className="text-xs text-gray-500 mb-2">
+                    Supports multiple formats:
+                    <br />• One question per line
+                    <br />• Comma-separated quoted strings: &quot;Question 1&quot;, &quot;Question 2&quot;
+                    <br />• JSON array: [&quot;Question 1&quot;, &quot;Question 2&quot;]
+                  </p>
                   <Textarea
                     id="questions"
                     name="questions"
                     value={template.questions}
                     onChange={handleChange}
-                    placeholder="Enter questions separated by line breaks"
-                    rows={5}
+                    placeholder={`Enter questions in any of these formats:
+
+Line format:
+What makes your product unique?
+How do you ensure quality?
+
+Comma format:
+"What makes your product unique?", "How do you ensure quality?"
+
+JSON format:
+["What makes your product unique?", "How do you ensure quality?"]`}
+                    rows={8}
                     required
                   />
                 </div>
@@ -156,6 +213,7 @@ export default function CreateTemplatePage() {
                   <Label htmlFor="difficulty" className="mb-2">Difficulty Level*</Label>
                   <Select
                     name="difficulty"
+                    value={template.difficulty}
                     onValueChange={(value) => handleSelectChange("difficulty", value)}
                     required
                   >

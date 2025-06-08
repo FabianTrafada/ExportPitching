@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -11,7 +12,7 @@ export default function Hero() {
       aria-labelledby="hero-heading"
     >
       {/* Background with overlay */}
-      <div className="absolute inset-0 bg-[url('/hero-bg.webp')] bg-cover bg-center">
+      <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/70"></div>
       </div>
 
@@ -56,13 +57,17 @@ export default function Hero() {
               transition={{ duration: 0.5, delay: 0.8 }}
             >
               <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium text-lg px-8 py-6">
-                Get Started
+                <Link href="/sign-in">
+                  Get Started
+                </Link>
               </Button>
               <Button
                 variant={"outline"}
                 className="bg-white text-gray-800 font-medium text-lg px-8 py-6"
               >
-                Learn More
+                <Link href="#features">
+                  Learn More
+                </Link>
               </Button>
             </motion.div>
           </motion.div>

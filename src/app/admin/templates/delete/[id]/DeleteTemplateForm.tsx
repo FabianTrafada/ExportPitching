@@ -92,8 +92,20 @@ export default function DeleteTemplateForm({
           <h2 className="text-xl font-semibold text-red-600">Delete Confirmation</h2>
         </div>
         
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <p className="text-red-800 font-medium mb-2">⚠️ Warning: This action cannot be undone!</p>
+          <p className="text-red-700 text-sm">
+            Deleting this template will also permanently delete:
+          </p>
+          <ul className="text-red-700 text-sm mt-2 ml-4 list-disc">
+            <li>All practice sessions using this template</li>
+            <li>All feedback and scores for those sessions</li>
+            <li>All user progress data related to this template</li>
+          </ul>
+        </div>
+        
         <p className="text-gray-700 mb-4">
-          Are you sure you want to delete the following template? This action cannot be undone.
+          Are you sure you want to delete the following template and all its related data?
         </p>
         
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
@@ -103,8 +115,8 @@ export default function DeleteTemplateForm({
             <span className="px-2 py-1 bg-gray-100 rounded-md">{initialTemplate.difficulty}</span>
             <span className="px-2 py-1 bg-gray-100 rounded-md">{initialTemplate.industry}</span>
             <span className="px-2 py-1 bg-gray-100 rounded-md">{initialTemplate.targetMarket}</span>
-            <span className="px-2 py-1 bg-gray-100 rounded-md">
-              Used {initialTemplate.usageCount} times
+            <span className="px-2 py-1 bg-red-100 text-red-700 rounded-md font-medium">
+              {initialTemplate.usageCount} practice sessions will be deleted
             </span>
           </div>
         </div>
@@ -127,10 +139,10 @@ export default function DeleteTemplateForm({
             {isDeleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                Deleting All Data...
               </>
             ) : (
-              "Delete Template"
+              "Delete Template & All Data"
             )}
           </Button>
         </div>

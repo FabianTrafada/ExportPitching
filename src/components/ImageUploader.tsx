@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, X, Upload } from "lucide-react";
@@ -14,15 +14,36 @@ interface ImageUploaderProps {
 export default function ImageUploader({ value, onChange }: ImageUploaderProps) {
   const [isLoading, setIsLoading] = useState(false);
 
+  // Use useCallback to prevent unnecessary re-renders
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onUploadSuccess = (result: any) => {
-    onChange(result.info.secure_url);
-    setIsLoading(false);
-  };
+  const onUploadSuccess = useCallback((result: any) => {
+    try {
+      if (result?.info?.secure_url) {
+        onChange(result.info.secure_url);
+      }
+    } catch (error) {
+      console.error('Error processing upload result:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [onChange]);
 
-  const removeImage = () => {
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onUploadError = useCallback((error: any) => {
+    console.error('Upload error:', error);
+    setIsLoading(false);
+  }, []);
+
+  const removeImage = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onChange("");
-  };
+  }, [onChange]);
+
+  const handleUploadClick = useCallback((open: () => void) => {
+    setIsLoading(true);
+    open();
+  }, []);
 
   return (
     <div className="space-y-4 w-full">
@@ -57,18 +78,22 @@ export default function ImageUploader({ value, onChange }: ImageUploaderProps) {
         <CldUploadWidget
           uploadPreset="exportpitch"
           onSuccess={onUploadSuccess}
+          onError={onUploadError}
           options={{
             maxFiles: 1,
             resourceType: "image",
+            clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
+            maxFileSize: 10000000, // 10MB
+            folder: "export-pitching/templates"
           }}
         >
           {({ open }) => (
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                setIsLoading(true);
-                open();
+              onClick={(e) => {
+                e.preventDefault();
+                handleUploadClick(open);
               }}
               className="w-full"
               disabled={isLoading}

@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { menuItems } from '@/constants/sidelinks';
-import { UserButton, useUser } from '@clerk/nextjs';
+import { SignOutButton, UserButton, useUser } from '@clerk/nextjs';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -136,50 +136,72 @@ export default function Sidebar() {
         </nav>
       </TooltipProvider>
 
-      {/* User profile section */}
-      <TooltipProvider>
-        <div className='sticky bottom-0 bg-white border-t border-gray-100 p-3'>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-                className={cn(
-                  'w-full flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors',
-                  isCollapsed ? 'justify-center' : 'justify-between'
-                )}
-              >
-                <div className="flex items-center gap-3">
+      {/* Bottom section with user profile and sign out */}
+      <div className='sticky bottom-0 bg-white border-t border-gray-100'>
+        <TooltipProvider>
+          {/* User Profile */}
+          <div className="p-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={cn(
+                    'w-full flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-colors',
+                    isCollapsed ? 'justify-center' : 'justify-start'
+                  )}
+                >
                   <UserButton afterSignOutUrl="/" />
                   
                   {!isCollapsed && user && (
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium text-gray-800 truncate max-w-[120px]">
+                    <div className="flex flex-col items-start min-w-0 flex-1">
+                      <span className="text-sm font-medium text-gray-800 truncate w-full">
                         {user?.firstName} {user?.lastName}
                       </span>
-                      <span className="text-xs text-gray-500 truncate max-w-[120px]">
+                      <span className="text-xs text-gray-500 truncate w-full">
                         {user?.emailAddresses[0]?.emailAddress}
                       </span>
                     </div>
                   )}
                 </div>
-                
-                {!isCollapsed && (
-                  <Link 
-                    href="/sign-out" 
-                    className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-red-500 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </Link>
-                )}
-              </div>
-            </TooltipTrigger>
-            {isCollapsed && (
-              <TooltipContent side="right" className='border border-gray-200 bg-white shadow-md'>
-                <p>Your Profile</p>
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </div>
-      </TooltipProvider>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right" className='border border-gray-200 bg-white shadow-md px-3 py-1.5 text-xs'>
+                  <p>{user?.firstName} {user?.lastName}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </div>
+
+          {/* Sign Out Button */}
+          {!isCollapsed && (
+            <div className="px-3 pb-3">
+              <SignOutButton>
+                <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-100 transition-colors">
+                  <LogOut className="h-4 w-4 mr-3" />
+                  Sign Out
+                </button>
+              </SignOutButton>
+            </div>
+          )}
+
+          {/* Collapsed Sign Out */}
+          {isCollapsed && (
+            <div className="px-3 pb-3">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <SignOutButton>
+                    <button className="flex w-full items-center justify-center p-2 text-gray-700 rounded-xl hover:bg-gray-100 transition-colors">
+                      <LogOut className="h-4 w-4" />
+                    </button>
+                  </SignOutButton>
+                </TooltipTrigger>
+                <TooltipContent side="right" className='border border-gray-200 bg-white shadow-md px-3 py-1.5 text-xs'>
+                  <p>Sign Out</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+        </TooltipProvider>
+      </div>
     </div>
   );
 }

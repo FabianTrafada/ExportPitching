@@ -1,8 +1,10 @@
 // src/components/dashboard/Billboard.tsx
 import { getCurrentUser } from "@/actions/general.actions";
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 export default async function Billboard() {
+    const clerkUser = await currentUser();
     const user = await getCurrentUser();
 
     if(!user) {
@@ -13,7 +15,7 @@ export default async function Billboard() {
       <div className="flex flex-wrap items-center gap-4 mb-2 md:mb-4">
         <div className="p-2 md:p-3">
           <Image 
-            src={user.imageUrl}
+            src={clerkUser?.imageUrl || ""}
             alt="User Avatar"
             width={40}
             height={40}
